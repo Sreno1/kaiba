@@ -3,7 +3,7 @@ import { Moon, Sun, Circle } from 'lucide-react';
 
 const themes = [
   { key: 'light', label: 'Light', icon: <Sun className="w-5 h-5 text-yellow-500" /> },
-  { key: 'dark', label: 'Dark', icon: <Moon className="w-5 h-5 text-gray-700 dark:text-yellow-400" /> },
+  { key: 'dark', label: 'Dark', icon: <Moon className="w-5 h-5 text-foreground dark:text-yellow-400" /> },
   { key: 'solarized', label: 'Solarized', icon: <Circle className="w-5 h-5 text-yellow-700" /> },
 ];
 
@@ -39,16 +39,16 @@ export default function ThemeToggle() {
 
   return (
     <select
-			aria-label="Select theme"
-			value={theme}
-			onChange={handleChange}
-			className="px-2 py-1 rounded border border-border bg-card text-foreground focus:outline-none focus:ring"
-		>
-			{themes.map((t) => (
-				<option key={t.key} value={t.key}>
-					{t.label}
-				</option>
-			))}
-		</select>
+      aria-label="Select theme"
+      value={theme}
+      onChange={handleChange}
+      className="px-2 py-1 rounded border border-border bg-card text-foreground focus:outline-none focus:ring"
+    >
+      {themes.map((t) => (
+        <option key={t.key} value={t.key}>
+          {t.label}
+        </option>
+      ))}
+    </select>
   );
 }

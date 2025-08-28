@@ -66,16 +66,16 @@ export default function QuickNotesSidebar({
                                         <ReactMarkdown
                                             className="prose prose-sm max-w-none"
                                             components={{
-                                                h1: ({ children }) => <h1 className="text-lg font-bold mb-2 text-gray-900">{children}</h1>,
-                                                h2: ({ children }) => <h2 className="text-base font-bold mb-2 text-gray-800">{children}</h2>,
-                                                h3: ({ children }) => <h3 className="text-sm font-bold mb-1 text-gray-800">{children}</h3>,
-                                                p: ({ children }) => <p className="mb-2 text-sm text-gray-700">{children}</p>,
-                                                ul: ({ children }) => <ul className="mb-2 ml-4 list-disc text-sm text-gray-700">{children}</ul>,
-                                                ol: ({ children }) => <ol className="mb-2 ml-4 list-decimal text-sm text-gray-700">{children}</ol>,
+                                                h1: ({ children }) => <h1 className="text-lg font-bold mb-2 text-foreground">{children}</h1>,
+                                                h2: ({ children }) => <h2 className="text-base font-bold mb-2 text-foreground">{children}</h2>,
+                                                h3: ({ children }) => <h3 className="text-sm font-bold mb-1 text-foreground">{children}</h3>,
+                                                p: ({ children }) => <p className="mb-2 text-sm text-foreground">{children}</p>,
+                                                ul: ({ children }) => <ul className="mb-2 ml-4 list-disc text-sm text-foreground">{children}</ul>,
+                                                ol: ({ children }) => <ol className="mb-2 ml-4 list-decimal text-sm text-foreground">{children}</ol>,
                                                 li: ({ children }) => <li className="mb-1">{children}</li>,
                                                 code: ({ children }) => <code className="px-1 py-0.5 bg-muted rounded text-xs">{children}</code>,
                                                 pre: ({ children }) => <pre className="p-2 bg-muted rounded text-xs overflow-x-auto mb-2">{children}</pre>,
-                                                blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 mb-2 text-sm italic text-gray-600">{children}</blockquote>,
+                                                blockquote: ({ children }) => <blockquote className="border-l-4 border-border pl-3 mb-2 text-sm italic text-muted-foreground">{children}</blockquote>,
                                                 strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                                                 em: ({ children }) => <em className="italic">{children}</em>
                                             }}
@@ -83,7 +83,7 @@ export default function QuickNotesSidebar({
                                             {quickNotes}
                                         </ReactMarkdown>
                                     ) : (
-                                        <p className="text-sm text-gray-500 italic">No notes to preview. Switch to edit mode to add some notes.</p>
+                                        <p className="text-sm text-muted-foreground italic">No notes to preview. Switch to edit mode to add some notes.</p>
                                     )}
                                 </div>
                             ) : (
@@ -95,7 +95,7 @@ export default function QuickNotesSidebar({
                                 />
                             )}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-muted-foreground">
                             {isNotesPreviewMode
                                 ? 'Notes are rendered with Markdown support. Click edit to modify.'
                                 : 'Supports Markdown formatting. Notes auto-save every 2 seconds.'

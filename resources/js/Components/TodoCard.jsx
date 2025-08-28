@@ -65,7 +65,7 @@ export default function TodoCard({
                             onClick={(e) => e.stopPropagation()}
                         />
                         <h3 className={`font-medium text-sm leading-tight ${
-                            todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
+                            todo.completed ? 'line-through text-muted-foreground' : 'text-foreground'
                         } truncate`}>
                             {todo.title}
                         </h3>
@@ -100,24 +100,24 @@ export default function TodoCard({
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
                         <div className={`w-2 h-2 rounded-full ${getStatusColor(todo.status || 'todo')}`}></div>
-                        <span className="text-xs text-gray-600">{formatStatus(todo.status || 'todo')}</span>
+                        <span className="text-xs text-muted-foreground">{formatStatus(todo.status || 'todo')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                         <div className={`w-2 h-2 rounded-full ${getPriorityColor(todo.priority)}`}></div>
-                        <span className="text-xs text-gray-600 capitalize">{todo.priority}</span>
+                        <span className="text-xs text-muted-foreground capitalize">{todo.priority}</span>
                     </div>
                 </div>
 
                 {/* Description */}
                 {todo.description && (
-                    <CardDescription className="text-xs leading-tight line-clamp-2 text-gray-600">
+                    <CardDescription className="text-xs leading-tight line-clamp-2 text-muted-foreground">
                         {todo.description}
                     </CardDescription>
                 )}
 
                 {/* Due date */}
                 {todo.due_date && (
-                    <div className="flex items-center gap-1 text-xs text-gray-600">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Calendar className="w-3 h-3" />
                         <span>{new Date(todo.due_date).toLocaleDateString()}</span>
                     </div>

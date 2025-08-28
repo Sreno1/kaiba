@@ -145,9 +145,9 @@ export default function TodoNavControls({
                                                         <div>
                                                             <div className="font-medium text-sm">{tag.name}</div>
                                                             {tag.description && (
-                                                                <div className="text-xs text-gray-500">{tag.description}</div>
+                                                                <div className="text-xs text-muted-foreground">{tag.description}</div>
                                                             )}
-                                                            <div className="text-xs text-gray-400">
+                                                            <div className="text-xs text-muted-foreground">
                                                                 Used in {tag.todos?.length || 0} todo(s)
                                                             </div>
                                                         </div>
@@ -165,7 +165,7 @@ export default function TodoNavControls({
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="text-center py-8 text-gray-500">
+                                    <div className="text-center py-8 text-muted-foreground">
                                         <Tag className="w-12 h-12 mx-auto mb-2 opacity-50" />
                                         <p>No tags created yet.</p>
                                         <p className="text-sm">Create your first tag above!</p>
@@ -193,7 +193,7 @@ export default function TodoNavControls({
 
             {/* Tag Filter Buttons */}
             <div className="flex gap-2 items-center">
-                <span className="text-sm text-gray-500">Filter:</span>
+                <span className="text-sm text-muted-foreground">Filter:</span>
                 <Button
                     variant={!activeTagFilter ? 'default' : 'outline'}
                     size="sm"
@@ -218,7 +218,7 @@ export default function TodoNavControls({
                     <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs text-gray-500"
+                        className="text-xs text-muted-foreground"
                     >
                         +{tags.length - 4} more
                     </Button>

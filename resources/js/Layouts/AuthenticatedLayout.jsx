@@ -19,13 +19,13 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
     return (
         <div className="min-h-screen bg-background">
             <nav
-                className={`border-b border-gray-100 bg-background text-foreground w-full fixed flex items-center justify-between px-4 transition-all duration-300 z-40 ${leftOffset} ${rightOffset}`}
+                className={`border-b border-border bg-background text-foreground w-full fixed flex items-center justify-between px-4 transition-all duration-300 z-40 ${leftOffset} ${rightOffset}`}
             >
                 {/* Left sidebar toggle - fixed to far left, hidden when sidebar is open */}
                 {sidebarControls && !sidebarControls.isLeftOpen && (
                     <button
                         onClick={sidebarControls.onLeftToggle}
-                        className="fixed left-0 top-0 z-50 h-16 w-12 bg-primary hover:bg-primary/80 text-white transition-all duration-300 flex items-center justify-center"
+                        className="fixed left-0 top-0 z-50 h-16 w-12 bg-primary hover:bg-primary/80 text-primary-foreground transition-all duration-300 flex items-center justify-center"
                         title="Open Schedule"
                     >
                         <PanelLeftOpen className="w-5 h-5" />
@@ -36,7 +36,7 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                 {sidebarControls && !sidebarControls.isRightOpen && (
                     <button
                         onClick={sidebarControls.onRightToggle}
-                        className="fixed right-0 top-0 z-50 h-16 w-12 bg-muted hover:bg-muted/80 text-white transition-all duration-300 flex items-center justify-center"
+                        className="fixed right-0 top-0 z-50 h-16 w-12 bg-muted hover:bg-muted/80 text-muted-foreground transition-all duration-300 flex items-center justify-center"
                         title="Open Notes"
                     >
                         <StickyNote className="w-5 h-5" />
@@ -48,7 +48,7 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                         <div className="flex items-center flex-1">
                             <div className="flex shrink-0 items-center mr-8">
                                 <Link href="/">
-                                    <span className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Boldonse, sans-serif' }}>KAIBA</span>
+                                    <span className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Boldonse, sans-serif' }}>KAIBA</span>
                                 </Link>
                             </div>
                             {/* Navigation Controls */}
@@ -65,6 +65,7 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                                     href={route('logout')}
                                     method="post"
                                     as="button"
+                                    className="text-foreground"
                                 >
                                     Log Out
                                 </NavLink>
@@ -121,12 +122,12 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                     }
                 >
 
-                    <div className="border-t border-gray-200 pb-1 pt-4">
+                    <div className="border-t border-border pb-1 pt-4">
                         <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">
+                            <div className="text-base font-medium text-foreground">
                                 {user.name}
                             </div>
-                            <div className="text-sm font-medium text-gray-500">
+                            <div className="text-sm font-medium text-muted-foreground">
                                 {user.email}
                             </div>
                         </div>

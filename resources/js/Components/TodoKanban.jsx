@@ -102,7 +102,7 @@ export default function TodoKanban({
         <div className="h-full w-full flex flex-col">
             {/* Toggle Header */}
             <div className="flex items-center justify-between p-4 border-b bg-card">
-                <h3 className="text-lg font-semibold text-gray-900">Kanban Board</h3>
+                <h3 className="text-lg font-semibold text-foreground">Kanban Board</h3>
                 <div className="flex gap-2 items-center">
                     {/* Group By Buttons */}
                     <div className="flex gap-1 p-1 bg-muted rounded-lg">
