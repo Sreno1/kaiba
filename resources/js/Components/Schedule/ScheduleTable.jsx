@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ScheduleTableRow from './ScheduleTableRow';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Checkbox } from '@/Components/ui/checkbox';
@@ -10,17 +11,18 @@ export default function ScheduleTable() {
     const [scheduleItems, setScheduleItems] = useState([]);
     const [newItem, setNewItem] = useState({ item: '', hours: '0.25', points: 0 });
 
-    // Generate time options in 15-minute increments
+    // Generate time options in 15-minute increments, compact labels
     const generateTimeOptions = () => {
         const options = [];
         for (let hours = 0; hours <= 12; hours++) {
             for (let minutes = 0; minutes < 60; minutes += 15) {
                 const decimal = hours + minutes / 60;
-                const label = decimal === 0.25 ? '15 min' : 
-                             decimal < 1 ? `${minutes} min` : 
-                             decimal === 1 ? '1 hour' : 
-                             decimal % 1 === 0 ? `${decimal} hours` : 
-                             `${Math.floor(decimal)} hr ${minutes} min`;
+                let label = '';
+                if (decimal === 0.25) label = '15';
+                else if (decimal < 1) label = `${minutes}`;
+                else if (decimal === 1) label = '1';
+                else if (decimal % 1 === 0) label = `${decimal}`;
+                else label = `${Math.floor(decimal)}:${minutes.toString().padStart(2, '0')}`;
                 options.push({ value: decimal.toString(), label });
             }
         }
@@ -44,7 +46,7 @@ export default function ScheduleTable() {
     const loadTodaySchedule = () => {
         const today = new Date().toDateString();
         const savedSchedule = localStorage.getItem(`schedule-${today}`);
-        
+
         if (savedSchedule) {
             try {
                 setScheduleItems(JSON.parse(savedSchedule));
@@ -82,9 +84,9 @@ export default function ScheduleTable() {
         const tomorrow = new Date(now);
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(0, 0, 0, 0); // Set to midnight
-        
+
         const msUntilMidnight = tomorrow.getTime() - now.getTime();
-        
+
         setTimeout(() => {
             // Save current schedule to history before reset
             archiveCurrentSchedule();
@@ -100,15 +102,15 @@ export default function ScheduleTable() {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toDateString();
-        
+
         // Save current items to history
         const historyKey = `schedule-history-${yesterdayStr}`;
         localStorage.setItem(historyKey, JSON.stringify(scheduleItems));
-        
+
         // Update history index
         const historyIndex = localStorage.getItem('schedule-history-index');
         let history = historyIndex ? JSON.parse(historyIndex) : [];
-        
+
         if (!history.includes(yesterdayStr)) {
             history.push(yesterdayStr);
             // Keep only last 90 days
@@ -122,7 +124,7 @@ export default function ScheduleTable() {
 
     const addItem = () => {
         if (!newItem.item.trim() || !newItem.hours) return;
-        
+
         const item = {
             id: Date.now(),
             item: newItem.item.trim(),
@@ -130,7 +132,7 @@ export default function ScheduleTable() {
             points: parseInt(newItem.points) || 0,
             done: false
         };
-        
+
         setScheduleItems(prev => [...prev, item]);
         setNewItem({ item: '', hours: '0.25', points: 0 });
     };
@@ -147,7 +149,7 @@ export default function ScheduleTable() {
     };
 
     const toggleDone = (id) => {
-        setScheduleItems(prev => prev.map(item => 
+        setScheduleItems(prev => prev.map(item =>
             item.id === id ? { ...item, done: !item.done } : item
         ));
     };
@@ -157,7 +159,7 @@ export default function ScheduleTable() {
     };
 
     const updateItem = (id, field, value) => {
-        setScheduleItems(prev => prev.map(item => 
+        setScheduleItems(prev => prev.map(item =>
             item.id === id ? { ...item, [field]: value } : item
         ));
     };
@@ -181,7 +183,7 @@ export default function ScheduleTable() {
     };
 
     return (
-        <Card className="h-full">
+        <div className="h-full">
             <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-lg flex items-center gap-2">
@@ -207,7 +209,7 @@ export default function ScheduleTable() {
                     Resets automatically at midnight
                 </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <div className="space-y-4">
                 {/* Add new item form */}
                 <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
                     <div className="grid grid-cols-1 gap-2">
@@ -258,52 +260,15 @@ export default function ScheduleTable() {
                             {scheduleItems
                                 .sort((a, b) => (a.hours || 0) - (b.hours || 0))
                                 .map((item) => (
-                                <div key={item.id} className={`flex items-center gap-2 p-2 rounded border ${
-                                    item.done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
-                                }`}>
-                                    <Checkbox
-                                        checked={item.done}
-                                        onCheckedChange={() => toggleDone(item.id)}
+                                    <ScheduleTableRow
+                                        key={item.id}
+                                        item={item}
+                                        timeOptions={timeOptions}
+                                        toggleDone={toggleDone}
+                                        updateItem={updateItem}
+                                        deleteItem={deleteItem}
                                     />
-                                    <div className="flex-1 min-w-0">
-                                        <Input
-                                            value={item.item}
-                                            onChange={(e) => updateItem(item.id, 'item', e.target.value)}
-                                            className={`text-sm h-8 ${item.done ? 'line-through text-gray-500' : ''}`}
-                                        />
-                                    </div>
-                                    <Select 
-                                        value={(item.hours || item.time || '0.25').toString()} 
-                                        onValueChange={(value) => updateItem(item.id, 'hours', parseFloat(value))}
-                                    >
-                                        <SelectTrigger className={`w-24 h-8 text-sm ${item.done ? 'text-gray-500' : ''}`}>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {timeOptions.map((option) => (
-                                                <SelectItem key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Input
-                                        type="number"
-                                        min="0"
-                                        value={item.points}
-                                        onChange={(e) => updateItem(item.id, 'points', parseInt(e.target.value) || 0)}
-                                        className={`w-16 text-sm h-8 ${item.done ? 'text-gray-500' : ''}`}
-                                    />
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => deleteItem(item.id)}
-                                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                                    >
-                                        <Trash2 className="w-3 h-3" />
-                                    </Button>
-                                </div>
-                            ))}
+                                ))}
                         </div>
                     )}
                 </div>
@@ -316,14 +281,14 @@ export default function ScheduleTable() {
                             <span className="font-medium">Points: {getTotalPoints()}/{getMaxPoints()}</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div 
+                            <div
                                 className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${(getTotalPoints() / Math.max(getMaxPoints(), 1)) * 100}%` }}
                             />
                         </div>
                     </div>
                 )}
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }

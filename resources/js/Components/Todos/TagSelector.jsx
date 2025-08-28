@@ -1,7 +1,9 @@
 import React from "react";
 import { Button } from "@/Components/ui";
+import { useTodos } from "@/Components/TodosContext";
 
-export default function TagSelector({ tags, selectedTagIds, onChange }) {
+export default function TagSelector({ selectedTagIds, onChange }) {
+    const { tags } = useTodos();
     const handleToggleTag = (tagId) => {
         if (selectedTagIds.includes(tagId)) {
             onChange(selectedTagIds.filter((id) => id !== tagId));
