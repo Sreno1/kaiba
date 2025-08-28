@@ -1,0 +1,18 @@
+html[data-theme="dark"] {
+  --background: #18181b;
+  --foreground: #f9fafb;
+  --card: #23272e;
+  --card-foreground: #f9fafb;
+  --primary: #f9fafb;
+  --primary-foreground: #18181b;
+  --secondary: #23272e;
+  --secondary-foreground: #f9fafb;
+  --muted: #23272e;
+  --muted-foreground: #a1a1aa;
+  --accent: #23272e;
+  --accent-foreground: #f9fafb;
+  --border: #27272a;
+  --input: #27272a;
+  --radius: 0.5rem;
+  background-color: #18181b;
+}

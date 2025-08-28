@@ -1,4 +1,5 @@
 import React from 'react';
+import ThemeToggle from './ThemeToggle';
 import { useTodos } from "@/Components/TodosContext";
 import {
     Button,
@@ -44,8 +45,9 @@ export default function TodoNavControls({
     } = useTodos();
     return (
         <div className="flex items-center gap-3">
-            {/* View Toggle */}
-            <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
+                            <ThemeToggle />
+
+            <div className="flex gap-1 p-1 bg-muted rounded-lg">
                 <Button
                     variant={viewMode === 'grid' ? 'default' : 'ghost'}
                     size="sm"
@@ -67,7 +69,7 @@ export default function TodoNavControls({
             </div>
 
             {/* Separator */}
-            <div className="h-6 w-px bg-gray-300" />
+            <div className="h-6 w-px bg-border" />
 
             {/* Tag Management */}
             <div className="flex items-center gap-2">
@@ -87,7 +89,7 @@ export default function TodoNavControls({
                         </DialogHeader>
                         <div className="space-y-4">
                             {/* Create New Tag Section */}
-                            <div className="border rounded-lg p-4 bg-gray-50">
+                            <div className="border rounded-lg p-4 bg-card">
                                 <h3 className="font-medium mb-3">Create New Tag</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     <div>
@@ -134,7 +136,7 @@ export default function TodoNavControls({
                                     <div className="max-h-60 overflow-y-auto border rounded-lg">
                                         <div className="grid gap-2 p-2">
                                             {tags.map((tag) => (
-                                                <div key={tag.id} className="flex items-center justify-between p-2 border rounded hover:bg-gray-50">
+                                                <div key={tag.id} className="flex items-center justify-between p-2 border rounded hover:bg-muted">
                                                     <div className="flex items-center gap-3">
                                                         <div
                                                             className="w-4 h-4 rounded-full border"
@@ -187,7 +189,7 @@ export default function TodoNavControls({
             </div>
 
             {/* Separator */}
-            <div className="h-6 w-px bg-gray-300" />
+            <div className="h-6 w-px bg-border" />
 
             {/* Tag Filter Buttons */}
             <div className="flex gap-2 items-center">

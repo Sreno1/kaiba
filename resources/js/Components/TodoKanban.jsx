@@ -5,14 +5,18 @@ import { KanbanProvider, KanbanBoard, KanbanHeader, KanbanCards, KanbanCard } fr
 import { Award, Activity } from 'lucide-react';
 import TodoCard from '@/Components/TodoCard';
 
-export default function TodoKanban({ 
-    todos, 
-    onToggleComplete, 
-    onEditTodo, 
-    onDeleteTodo, 
-    onDragEnd 
+export default function TodoKanban({
+    todos,
+    onToggleComplete,
+    onEditTodo,
+    onDeleteTodo,
+    onDragEnd
 }) {
-    const [groupByMode, setGroupByMode] = useState('priority'); // 'priority' or 'status'
+    // Default to 'status' view
+    const [groupByMode, setGroupByMode] = useState('status'); // 'priority' or 'status'
+    // Filter toggles
+    const [showBackburner, setShowBackburner] = useState(true);
+    const [showCompleted, setShowCompleted] = useState(true);
 
     // Define the priority columns
     const priorityColumns = [
@@ -22,14 +26,22 @@ export default function TodoKanban({
     ];
 
     // Define the status columns
-    const statusColumns = [
-        { id: 'backlog', name: 'Backlog', color: 'bg-gray-100 border-gray-200' },
+    let statusColumns = [
+        { id: 'backlog', name: 'Backburner', color: 'bg-muted border-border' },
         { id: 'todo', name: 'To Do', color: 'bg-blue-100 border-blue-200' },
         { id: 'working', name: 'Working', color: 'bg-orange-100 border-orange-200' },
         { id: 'qa', name: 'QA', color: 'bg-purple-100 border-purple-200' },
         { id: 'in_review', name: 'In Review', color: 'bg-yellow-100 border-yellow-200' },
         { id: 'completed', name: 'Completed', color: 'bg-green-100 border-green-200' },
     ];
+
+    // Filter columns based on toggles
+    if (!showBackburner) {
+        statusColumns = statusColumns.filter(col => col.id !== 'backlog');
+    }
+    if (!showCompleted) {
+        statusColumns = statusColumns.filter(col => col.id !== 'completed');
+    }
 
     // Select columns based on current mode
     const columns = groupByMode === 'priority' ? priorityColumns : statusColumns;
@@ -49,13 +61,13 @@ export default function TodoKanban({
                 id: parseInt(item.id),
                 todo: item.todo
             };
-            
+
             if (groupByMode === 'priority') {
                 baseChange.priority = item.column;
             } else {
                 baseChange.status = item.column;
             }
-            
+
             return baseChange;
         });
         onDragEnd(changes);
@@ -66,19 +78,19 @@ export default function TodoKanban({
             case 'high': return 'bg-red-500';
             case 'medium': return 'bg-yellow-500';
             case 'low': return 'bg-green-500';
-            default: return 'bg-gray-500';
+            default: return 'bg-muted';
         }
     };
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'backlog': return 'bg-gray-500';
+            case 'backlog': return 'bg-muted';
             case 'todo': return 'bg-blue-500';
             case 'working': return 'bg-orange-500';
             case 'qa': return 'bg-purple-500';
             case 'in_review': return 'bg-yellow-500';
             case 'completed': return 'bg-green-500';
-            default: return 'bg-gray-500';
+            default: return 'bg-muted';
         }
     };
 
@@ -89,30 +101,54 @@ export default function TodoKanban({
     return (
         <div className="h-full w-full flex flex-col">
             {/* Toggle Header */}
-            <div className="flex items-center justify-between p-4 border-b bg-white">
+            <div className="flex items-center justify-between p-4 border-b bg-card">
                 <h3 className="text-lg font-semibold text-gray-900">Kanban Board</h3>
-                <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
-                    <Button
-                        variant={groupByMode === 'priority' ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setGroupByMode('priority')}
-                        className="h-8 text-xs"
-                    >
-                        <Award className="w-3 h-3 mr-1" />
-                        Priority
-                    </Button>
-                    <Button
-                        variant={groupByMode === 'status' ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setGroupByMode('status')}
-                        className="h-8 text-xs"
-                    >
-                        <Activity className="w-3 h-3 mr-1" />
-                        Status
-                    </Button>
+                <div className="flex gap-2 items-center">
+                    {/* Group By Buttons */}
+                    <div className="flex gap-1 p-1 bg-muted rounded-lg">
+                        <Button
+                            variant={groupByMode === 'priority' ? 'default' : 'ghost'}
+                            size="sm"
+                            onClick={() => setGroupByMode('priority')}
+                            className="h-8 text-xs"
+                        >
+                            <Award className="w-3 h-3 mr-1" />
+                            Priority
+                        </Button>
+                        <Button
+                            variant={groupByMode === 'status' ? 'default' : 'ghost'}
+                            size="sm"
+                            onClick={() => setGroupByMode('status')}
+                            className="h-8 text-xs"
+                        >
+                            <Activity className="w-3 h-3 mr-1" />
+                            Status
+                        </Button>
+                    </div>
+                    {/* Filter Toggles */}
+                    {groupByMode === 'status' && (
+                        <div className="flex gap-1 ml-2">
+                            <Button
+                                variant={showBackburner ? 'default' : 'ghost'}
+                                size="sm"
+                                onClick={() => setShowBackburner(v => !v)}
+                                className="h-8 text-xs"
+                            >
+                                Backburner
+                            </Button>
+                            <Button
+                                variant={showCompleted ? 'default' : 'ghost'}
+                                size="sm"
+                                onClick={() => setShowCompleted(v => !v)}
+                                className="h-8 text-xs"
+                            >
+                                Completed
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
-            
+
             {/* Kanban Content */}
             <div className="flex-1">
             <KanbanProvider
@@ -132,7 +168,7 @@ export default function TodoKanban({
                                 </Badge>
                             </div>
                         </KanbanHeader>
-                        
+
                         <KanbanCards id={column.id} className="flex-1 p-2">
                             {(item) => (
                                 <KanbanCard key={item.id} id={item.id} name={item.name} className="group">

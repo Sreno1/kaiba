@@ -211,7 +211,7 @@ export default function ScheduleTable() {
             </CardHeader>
             <div className="space-y-4">
                 {/* Add new item form */}
-                <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
+                <div className="space-y-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     <div className="grid grid-cols-1 gap-2">
                         <Input
                             placeholder="Schedule item..."
@@ -280,7 +280,7 @@ export default function ScheduleTable() {
                             <span>Completed: {scheduleItems.filter(item => item.done).length}/{scheduleItems.length}</span>
                             <span className="font-medium">Points: {getTotalPoints()}/{getMaxPoints()}</span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
                             <div
                                 className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${(getTotalPoints() / Math.max(getMaxPoints(), 1)) * 100}%` }}

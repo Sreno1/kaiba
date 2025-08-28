@@ -45,7 +45,7 @@ export default function ScheduleHistory() {
 
     const navigateDate = (direction) => {
         const newDate = new Date(currentDate);
-        
+
         switch (currentView) {
             case 'daily':
                 newDate.setDate(newDate.getDate() + direction);
@@ -57,13 +57,13 @@ export default function ScheduleHistory() {
                 newDate.setMonth(newDate.getMonth() + direction);
                 break;
         }
-        
+
         setCurrentDate(newDate);
     };
 
     const getDateRange = () => {
         const date = new Date(currentDate);
-        
+
         switch (currentView) {
             case 'daily':
                 return {
@@ -222,7 +222,7 @@ export default function ScheduleHistory() {
                     {Object.keys(data).sort().map(dateStr => {
                         const daySchedule = data[dateStr];
                         const dayStats = calculateStats({ [dateStr]: daySchedule });
-                        
+
                         return (
                             <div key={dateStr} className="p-3 border rounded-lg">
                                 <div className="flex justify-between items-center mb-2">
@@ -233,7 +233,7 @@ export default function ScheduleHistory() {
                                     </div>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-1">
-                                    <div 
+                                    <div
                                         className="bg-blue-500 h-1 rounded-full transition-all duration-300"
                                         style={{ width: `${dayStats.completionRate}%` }}
                                     />
@@ -293,9 +293,9 @@ export default function ScheduleHistory() {
                         {Object.keys(data).sort().reverse().map(dateStr => {
                             const daySchedule = data[dateStr];
                             const dayStats = calculateStats({ [dateStr]: daySchedule });
-                            
+
                             return (
-                                <div key={dateStr} className="flex justify-between items-center p-2 bg-white rounded border">
+                                <div key={dateStr} className="flex justify-between items-center p-2 bg-white dark:bg-gray-900 rounded border">
                                     <span className="text-sm">{new Date(dateStr).toLocaleDateString()}</span>
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs text-gray-600">{dayStats.completedItems}/{dayStats.totalItems}</span>
@@ -321,7 +321,7 @@ export default function ScheduleHistory() {
                         Schedule History
                     </CardTitle>
                 </div>
-                
+
                 {/* View selector */}
                 <div className="flex gap-1">
                     {['daily', 'weekly', 'monthly'].map(view => (

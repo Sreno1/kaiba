@@ -72,7 +72,7 @@ function ScheduleTableRow({
             className={`flex items-center gap-2 rounded border ${styles.row} ${
                 isDeleting ? styles.deleting : isDragging ? styles.dragging : ''
             } ${
-                item.done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
+                item.done ? 'bg-green-50 border-green-200' : 'bg-white dark:bg-gray-900 border-gray-200'
             }`}
             {...swipeHandlers}
             onMouseDown={handleMouseDown}

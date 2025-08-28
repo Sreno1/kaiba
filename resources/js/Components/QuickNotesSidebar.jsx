@@ -12,7 +12,7 @@ export default function QuickNotesSidebar({
     setQuickNotes
 }) {
     return (
-        <div className={`fixed top-0 right-0 h-full w-80 bg-white border-l shadow-xl transform transition-transform duration-300 ease-in-out z-40 ${
+        <div className={`fixed top-0 right-0 h-full w-80 bg-card border-l shadow-xl transform transition-transform duration-300 ease-in-out z-40 ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}>
             <div className="flex flex-col h-full">
@@ -61,7 +61,7 @@ export default function QuickNotesSidebar({
                                 {isNotesPreviewMode ? 'Preview' : 'Notes'}
                             </label>
                             {isNotesPreviewMode ? (
-                                <div className="min-h-[300px] p-3 border rounded-md bg-gray-50 overflow-y-auto">
+                                <div className="min-h-[300px] p-3 border rounded-md bg-muted overflow-y-auto">
                                     {quickNotes.trim() ? (
                                         <ReactMarkdown
                                             className="prose prose-sm max-w-none"
@@ -73,8 +73,8 @@ export default function QuickNotesSidebar({
                                                 ul: ({ children }) => <ul className="mb-2 ml-4 list-disc text-sm text-gray-700">{children}</ul>,
                                                 ol: ({ children }) => <ol className="mb-2 ml-4 list-decimal text-sm text-gray-700">{children}</ol>,
                                                 li: ({ children }) => <li className="mb-1">{children}</li>,
-                                                code: ({ children }) => <code className="px-1 py-0.5 bg-gray-200 rounded text-xs">{children}</code>,
-                                                pre: ({ children }) => <pre className="p-2 bg-gray-100 rounded text-xs overflow-x-auto mb-2">{children}</pre>,
+                                                code: ({ children }) => <code className="px-1 py-0.5 bg-muted rounded text-xs">{children}</code>,
+                                                pre: ({ children }) => <pre className="p-2 bg-muted rounded text-xs overflow-x-auto mb-2">{children}</pre>,
                                                 blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-3 mb-2 text-sm italic text-gray-600">{children}</blockquote>,
                                                 strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                                                 em: ({ children }) => <em className="italic">{children}</em>

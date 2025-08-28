@@ -49,7 +49,7 @@ export default function TodoCard({
             className={`
                 ${todo.completed ? 'opacity-60' : ''}
                 group transition-all duration-200
-                border border-gray-200 hover:border-gray-300 bg-white rounded-lg
+                border border-gray-200 hover:border-gray-300 bg-white dark:bg-gray-900 rounded-lg
                 ${variant === 'grid' ? 'hover:shadow-lg' : ''}
                 ${className}
             `}
