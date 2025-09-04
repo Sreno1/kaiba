@@ -77,29 +77,38 @@ export const KanbanCard = ({
     transform: CSS.Transform.toString(transform),
   };
 
+  // Dedicated drag handle (top-left corner)
   return (
     <>
-      <div style={style} {...listeners} {...attributes} ref={setNodeRef}>
+      <div style={style} ref={setNodeRef}>
         <Card
           className={cn(
-            'cursor-grab gap-4 rounded-md p-3 shadow-sm',
-            isDragging && 'pointer-events-none cursor-grabbing opacity-30',
+            'gap-4 rounded-md p-3 shadow-sm',
+            isDragging && 'pointer-events-none opacity-30',
             className
           )}
         >
-          {children ?? <p className="m-0 font-medium text-sm">{name}</p>}
+          {/* Drag handle: only this area is draggable */}
+          <div className="cursor-grab active:cursor-grabbing inline-flex items-center" {...listeners} {...attributes} tabIndex={0} aria-label="Drag handle" style={{marginRight: 8}}>
+            <svg width="16" height="16" fill="none" viewBox="0 0 16 16"><circle cx="3" cy="4" r="1.5" fill="#888"/><circle cx="3" cy="8" r="1.5" fill="#888"/><circle cx="3" cy="12" r="1.5" fill="#888"/><circle cx="8" cy="4" r="1.5" fill="#888"/><circle cx="8" cy="8" r="1.5" fill="#888"/><circle cx="8" cy="12" r="1.5" fill="#888"/></svg>
+          </div>
+          {/* Card content */}
+          <div className="flex-1">{children ?? <p className="m-0 font-medium text-sm">{name}</p>}</div>
         </Card>
       </div>
       {activeCardId === id && (
         <t.In>
           <Card
             className={cn(
-              'cursor-grab gap-4 rounded-md p-3 shadow-sm ring-2 ring-primary',
+              'gap-4 rounded-md p-3 shadow-sm ring-2 ring-primary',
               isDragging && 'cursor-grabbing',
               className
             )}
           >
-            {children ?? <p className="m-0 font-medium text-sm">{name}</p>}
+            <div className="cursor-grab active:cursor-grabbing inline-flex items-center" tabIndex={0} aria-label="Drag handle">
+              <svg width="16" height="16" fill="none" viewBox="0 0 16 16"><circle cx="3" cy="4" r="1.5" fill="#888"/><circle cx="3" cy="8" r="1.5" fill="#888"/><circle cx="3" cy="12" r="1.5" fill="#888"/><circle cx="8" cy="4" r="1.5" fill="#888"/><circle cx="8" cy="8" r="1.5" fill="#888"/><circle cx="8" cy="12" r="1.5" fill="#888"/></svg>
+            </div>
+            <div className="flex-1">{children ?? <p className="m-0 font-medium text-sm">{name}</p>}</div>
           </Card>
         </t.In>
       )}

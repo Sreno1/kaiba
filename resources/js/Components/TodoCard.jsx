@@ -78,7 +78,7 @@ export default function TodoCard({
                                 e.stopPropagation();
                                 onEdit(todo);
                             }}
-                            className="h-6 w-6 p-0"
+                            className="h-6 w-6 p-0 pointer-events-auto"
                         >
                             <Edit2 className="w-3 h-3" />
                         </Button>
@@ -89,7 +89,7 @@ export default function TodoCard({
                                 e.stopPropagation();
                                 onDelete(todo.id);
                             }}
-                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700 pointer-events-auto"
                         >
                             <Trash2 className="w-3 h-3" />
                         </Button>

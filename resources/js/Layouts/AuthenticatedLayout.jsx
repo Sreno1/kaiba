@@ -15,6 +15,8 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
     const SIDEBAR_WIDTH = '64'; // Tailwind unit (w-64)
     const leftOffset = sidebarControls && sidebarControls.isLeftOpen ? `ml-${SIDEBAR_WIDTH}` : 'ml-0';
     const rightOffset = sidebarControls && sidebarControls.isRightOpen ? `mr-${SIDEBAR_WIDTH}` : 'mr-0';
+    const innerLeftPad = sidebarControls && sidebarControls.isLeftOpen ? `pl-${SIDEBAR_WIDTH}` : 'pl-0';
+    const innerRightPad = sidebarControls && sidebarControls.isRightOpen ? `pr-${SIDEBAR_WIDTH}` : 'pr-0';
 
     return (
         <div className="min-h-screen bg-background">
@@ -43,7 +45,7 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                     </button>
                 )}
 
-                <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 transition-all duration-300">
+                <div className={`mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 transition-all duration-300 ${innerLeftPad} ${innerRightPad}`}>
                     <div className="flex h-16 justify-between">
                         <div className="flex items-center flex-1">
                             <div className="flex shrink-0 items-center mr-8">

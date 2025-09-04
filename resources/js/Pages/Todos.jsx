@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import AlertModal from '@/Components/AlertModal';
+import useAlertModal from '@/hooks/useAlertModal';
+import ConfirmModal from '@/Components/ConfirmModal';
+import useConfirmModal from '@/hooks/useConfirmModal';
 import TodoNavControls from "@/Components/TodoNavControls";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
@@ -49,39 +53,59 @@ export default function Todos(props) {
         localStorage.getItem("kaiba-quick-notes") || ""
     );
 
+    const alertModal = useAlertModal();
+    const confirmModal = useConfirmModal();
+
     return (
-        <TodosProvider
-            initialTodos={initialTodos}
-            initialTags={initialTags}
-            setIsCreateDialogOpen={setIsCreateDialogOpen}
-            setIsEditDialogOpen={setIsEditDialogOpen}
-            setIsTagManagerOpen={setIsTagManagerOpen}
-            setIsTagDialogOpen={setIsTagDialogOpen}
-        >
-            <TodosPageContent
-                auth={auth}
-                viewMode={viewMode}
-                setViewMode={setViewMode}
-                activeTagFilter={activeTagFilter}
-                setActiveTagFilter={setActiveTagFilter}
-                isTagManagerOpen={isTagManagerOpen}
-                setIsTagManagerOpen={setIsTagManagerOpen}
-                isTagDialogOpen={isTagDialogOpen}
-                setIsTagDialogOpen={setIsTagDialogOpen}
-                isCreateDialogOpen={isCreateDialogOpen}
+        <>
+            <TodosProvider
+                initialTodos={initialTodos}
+                initialTags={initialTags}
                 setIsCreateDialogOpen={setIsCreateDialogOpen}
-                isEditDialogOpen={isEditDialogOpen}
                 setIsEditDialogOpen={setIsEditDialogOpen}
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-                isLeftSidebarOpen={isLeftSidebarOpen}
-                setIsLeftSidebarOpen={setIsLeftSidebarOpen}
-                isNotesPreviewMode={isNotesPreviewMode}
-                setIsNotesPreviewMode={setIsNotesPreviewMode}
-                quickNotes={quickNotes}
-                setQuickNotes={setQuickNotes}
+                setIsTagManagerOpen={setIsTagManagerOpen}
+                setIsTagDialogOpen={setIsTagDialogOpen}
+                showAlert={alertModal.showAlert}
+                showConfirm={confirmModal.showConfirm}
+            >
+                <TodosPageContent
+                    auth={auth}
+                    viewMode={viewMode}
+                    setViewMode={setViewMode}
+                    activeTagFilter={activeTagFilter}
+                    setActiveTagFilter={setActiveTagFilter}
+                    isTagManagerOpen={isTagManagerOpen}
+                    setIsTagManagerOpen={setIsTagManagerOpen}
+                    isTagDialogOpen={isTagDialogOpen}
+                    setIsTagDialogOpen={setIsTagDialogOpen}
+                    isCreateDialogOpen={isCreateDialogOpen}
+                    setIsCreateDialogOpen={setIsCreateDialogOpen}
+                    isEditDialogOpen={isEditDialogOpen}
+                    setIsEditDialogOpen={setIsEditDialogOpen}
+                    isSidebarOpen={isSidebarOpen}
+                    setIsSidebarOpen={setIsSidebarOpen}
+                    isLeftSidebarOpen={isLeftSidebarOpen}
+                    setIsLeftSidebarOpen={setIsLeftSidebarOpen}
+                    isNotesPreviewMode={isNotesPreviewMode}
+                    setIsNotesPreviewMode={setIsNotesPreviewMode}
+                    quickNotes={quickNotes}
+                    setQuickNotes={setQuickNotes}
+                />
+            </TodosProvider>
+            <AlertModal
+                show={alertModal.alert.show}
+                title={alertModal.alert.title}
+                message={alertModal.alert.message}
+                onClose={alertModal.hideAlert}
             />
-        </TodosProvider>
+            <ConfirmModal
+                show={confirmModal.confirm.show}
+                title={confirmModal.confirm.title}
+                message={confirmModal.confirm.message}
+                onConfirm={confirmModal.handleConfirm}
+                onCancel={confirmModal.handleCancel}
+            />
+        </>
     );
 }
 
