@@ -15,8 +15,8 @@ import {
     SelectItem,
     Button
 } from "@/Components/ui";
-import TagSelector from "@/Components/Todos/TagSelector";
-import { useTodos } from "@/Components/TodosContext";
+import TagSelector from "@/features/tags/TagSelector";
+import { useTodos } from "../TodosContext";
 
 export default function TodoDialog({ open, onOpenChange, mode = "create", loading = false }) {
     const {
@@ -28,12 +28,17 @@ export default function TodoDialog({ open, onOpenChange, mode = "create", loadin
     } = useTodos();
     const isEdit = mode === "edit";
 
-    const handleSubmit = (e) => {
-        e?.preventDefault?.();
-        if (isEdit) {
-            handleUpdateTodo();
-        } else {
-            handleCreateTodo();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log('Form submitted with data:', todoForm);
+        try {
+            if (isEdit) {
+                await handleUpdateTodo();
+            } else {
+                await handleCreateTodo();
+            }
+        } catch (error) {
+            console.error('Form submission error:', error);
         }
     };
 

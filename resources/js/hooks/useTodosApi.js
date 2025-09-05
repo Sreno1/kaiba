@@ -14,9 +14,11 @@ export default function useTodosApi({
     setTagForm: externalSetTagForm,
     showAlert,
 }) {
+    // Debug initial data
+    console.log('useTodosApi initialized with:', { initialTodos, initialTags });
     // Local state fallback if not provided
-    const [todos, setTodos] = externalSetTodos ? [null, externalSetTodos] : useState(initialTodos);
-    const [tags, setTags] = externalSetTags ? [null, externalSetTags] : useState(initialTags);
+    const [todos, setTodos] = externalSetTodos ? [null, externalSetTodos] : useState(initialTodos || []);
+    const [tags, setTags] = externalSetTags ? [null, externalSetTags] : useState(initialTags || []);
     const [todoForm, setTodoForm] = externalSetTodoForm ? [null, externalSetTodoForm] : useState({
         title: "",
         description: "",
@@ -35,10 +37,10 @@ export default function useTodosApi({
     const handleCreateTag = async () => {
         if (!tagForm.name.trim()) {
             showAlert && showAlert('Please enter a tag name', 'Validation');
-            return;
+            return null;
         }
         try {
-            const response = await axios.post('/api/tags', {
+            const response = await axios.post('/tags', {
                 name: tagForm.name.trim(),
                 color: tagForm.color,
                 description: tagForm.description || null
@@ -48,10 +50,12 @@ export default function useTodosApi({
             setIsTagManagerOpen && setIsTagManagerOpen(false);
             setIsTagDialogOpen && setIsTagDialogOpen(false);
             showAlert && showAlert('Tag created successfully!', 'Success');
+            return response.data; // Return the created tag
         } catch (error) {
             console.error('Error creating tag:', error);
             const errorMessage = error.response?.data?.message || 'Failed to create tag';
             showAlert && showAlert(`Error: ${errorMessage}`, 'Error');
+            return null;
         }
     };
 
@@ -60,7 +64,7 @@ export default function useTodosApi({
             return;
         }
         try {
-            await axios.delete(`/api/tags/${id}`);
+            await axios.delete(`/tags/${id}`);
             setTags(prev => prev.filter(tag => tag.id !== id));
             setTodos(prev => prev.map(todo => ({
                 ...todo,
@@ -75,12 +79,15 @@ export default function useTodosApi({
     };
 
     const handleCreateTodo = async () => {
+        console.log('handleCreateTodo called with form:', todoForm);
         if (!todoForm.title.trim()) {
+            console.log('Validation failed: no title');
             showAlert && showAlert('Please enter a todo title', 'Validation');
             return;
         }
         try {
-            const response = await axios.post('/api/todos', {
+            console.log('Making API call to create todo');
+            const response = await axios.post('/todos', {
                 title: todoForm.title.trim(),
                 description: todoForm.description || null,
                 status: todoForm.status,
@@ -88,6 +95,7 @@ export default function useTodosApi({
                 due_date: todoForm.due_date || null,
                 tag_ids: todoForm.tag_ids
             });
+            console.log('Todo created successfully:', response.data);
             setTodos(prev => [response.data, ...prev]);
             setTodoForm({
                 title: '',
@@ -101,6 +109,7 @@ export default function useTodosApi({
             showAlert && showAlert('Todo created successfully!', 'Success');
         } catch (error) {
             console.error('Error creating todo:', error);
+            console.error('Error details:', error.response);
             const errorMessage = error.response?.data?.message || 'Failed to create todo';
             showAlert && showAlert(`Error: ${errorMessage}`, 'Error');
         }
@@ -112,7 +121,7 @@ export default function useTodosApi({
             return;
         }
         try {
-            const response = await axios.put(`/api/todos/${todoForm.id}`, {
+            const response = await axios.put(`/todos/${todoForm.id}`, {
                 title: todoForm.title.trim(),
                 description: todoForm.description || null,
                 status: todoForm.status,
@@ -137,7 +146,7 @@ export default function useTodosApi({
         if (!todo) return;
         try {
             const newStatus = todo.status === 'completed' ? 'todo' : 'completed';
-            const response = await axios.put(`/api/todos/${id}`, {
+            const response = await axios.put(`/todos/${id}`, {
                 status: newStatus
             });
             setTodos(prev => prev.map(t =>
@@ -172,7 +181,7 @@ export default function useTodosApi({
                     'Delete Todo',
                     async () => {
                         try {
-                            await axios.delete(`/api/todos/${id}`);
+                            await axios.delete(`/todos/${id}`);
                             setTodos(prev => prev.filter(todo => todo.id !== id));
                             showAlert && showAlert('Todo deleted successfully!', 'Success');
                             resolve(true);
@@ -191,7 +200,7 @@ export default function useTodosApi({
                 return;
             }
             try {
-                await axios.delete(`/api/todos/${id}`);
+                await axios.delete(`/todos/${id}`);
                 setTodos(prev => prev.filter(todo => todo.id !== id));
                 showAlert && showAlert('Todo deleted successfully!', 'Success');
             } catch (error) {
@@ -200,14 +209,29 @@ export default function useTodosApi({
                 showAlert && showAlert(`Error: ${errorMessage}`, 'Error');
             }
         }
+    };
+
+    const handleSearch = async (query) => {
+        if (!query || query.trim() === '') {
+            // If empty query, reload all todos
+            try {
+                const response = await axios.get('/todos');
+                setTodos(response.data);
+            } catch (error) {
+                console.error('Error loading todos:', error);
+                showAlert && showAlert('Error loading todos', 'Error');
+            }
+            return;
+        }
+
         try {
-            await axios.delete(`/api/todos/${id}`);
-            setTodos(prev => prev.filter(todo => todo.id !== id));
-            showAlert && showAlert('Todo deleted successfully!', 'Success');
+            const response = await axios.get('/todos-search', {
+                params: { q: query.trim() }
+            });
+            setTodos(response.data);
         } catch (error) {
-            console.error('Error deleting todo:', error);
-            const errorMessage = error.response?.data?.message || 'Failed to delete todo';
-            showAlert && showAlert(`Error: ${errorMessage}`, 'Error');
+            console.error('Error searching todos:', error);
+            showAlert && showAlert('Error searching todos', 'Error');
         }
     };
 
@@ -227,5 +251,6 @@ export default function useTodosApi({
         handleToggleComplete,
         openEditDialog,
         handleDeleteTodo,
+        handleSearch,
     };
 }

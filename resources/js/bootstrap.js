@@ -1,12 +1,12 @@
 import axios from 'axios';
-window.axios = axios;
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-window.axios.defaults.withCredentials = true;
+// Configure axios defaults
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+axios.defaults.withCredentials = true;
 
-// Add response interceptor to handle 401 errors
-window.axios.interceptors.response.use(
+// Handle authentication errors
+axios.interceptors.response.use(
     response => response,
     error => {
         if (error.response?.status === 401) {
@@ -15,3 +15,8 @@ window.axios.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+// Make axios available globally for debugging if needed
+if (import.meta.env.DEV) {
+    window.axios = axios;
+}

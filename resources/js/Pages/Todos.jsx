@@ -3,13 +3,13 @@ import AlertModal from '@/Components/AlertModal';
 import useAlertModal from '@/hooks/useAlertModal';
 import ConfirmModal from '@/Components/ConfirmModal';
 import useConfirmModal from '@/hooks/useConfirmModal';
-import TodoNavControls from "@/Components/TodoNavControls";
+import TodoNavControls from "@/features/todos/TodoNavControls";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Button } from "@/Components/ui";
 import QuickNotesSidebar from "@/Components/QuickNotesSidebar";
-import ScheduleSidebar from "@/Components/ScheduleSidebar";
-import TodoDialog from "@/Components/Todos/TodoDialog";
+import ScheduleSidebar from "@/features/schedule/ScheduleSidebar";
+import TodoDialog from "@/features/todos/components/TodoDialog";
 import {
     Calendar,
     X,
@@ -24,11 +24,11 @@ import {
     Edit,
     Eye,
 } from "lucide-react";
-import TodoKanban from "@/Components/TodoKanban";
-import TodoCard from "@/Components/TodoCard";
-import Schedule from "@/Components/Schedule/Schedule";
+import TodoKanban from "@/features/todos/TodoKanban";
+import TodoCard from "@/features/todos/TodoCard";
+import Schedule from "@/features/schedule/components/Schedule";
 import ReactMarkdown from "react-markdown";
-import { TodosProvider, useTodos } from "@/Components/TodosContext";
+import { TodosProvider, useTodos } from "@/features/todos/TodosContext";
 
 
 export default function Todos(props) {

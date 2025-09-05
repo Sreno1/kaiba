@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class TagController extends Controller
 {
@@ -14,7 +14,11 @@ class TagController extends Controller
      */
     public function index(): JsonResponse
     {
-        $tags = Tag::with('todos')->orderBy('name')->get();
+        // Cache tags for 30 minutes since they don't change often
+        $tags = Cache::remember('tags.all', 1800, function () {
+            return Tag::orderBy('name')->get();
+        });
+        
         return response()->json($tags);
     }
 
@@ -25,11 +29,15 @@ class TagController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:tags',
-            'color' => 'nullable|string|max:7',
+            'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'description' => 'nullable|string',
         ]);
 
         $tag = Tag::create($validated);
+        
+        // Invalidate tags cache
+        Cache::forget('tags.all');
+        
         return response()->json($tag, 201);
     }
 
@@ -38,7 +46,7 @@ class TagController extends Controller
      */
     public function show(Tag $tag): JsonResponse
     {
-        return response()->json($tag->load('todos'));
+        return response()->json($tag);
     }
 
     /**
@@ -48,11 +56,15 @@ class TagController extends Controller
     {
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255|unique:tags,name,' . $tag->id,
-            'color' => 'nullable|string|max:7',
+            'color' => 'sometimes|required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'description' => 'nullable|string',
         ]);
 
         $tag->update($validated);
+        
+        // Invalidate tags cache
+        Cache::forget('tags.all');
+        
         return response()->json($tag);
     }
 
@@ -62,6 +74,10 @@ class TagController extends Controller
     public function destroy(Tag $tag): JsonResponse
     {
         $tag->delete();
+        
+        // Invalidate tags cache
+        Cache::forget('tags.all');
+        
         return response()->json(null, 204);
     }
 }

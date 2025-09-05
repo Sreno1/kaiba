@@ -1,15 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\TodoController;
-use App\Http\Controllers\Api\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// Keep user endpoint for potential API usage
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('todos', TodoController::class);
-    Route::apiResource('tags', TagController::class);
-});

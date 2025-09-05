@@ -3,7 +3,7 @@ import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { KanbanProvider, KanbanBoard, KanbanHeader, KanbanCards, KanbanCard } from '@/Components/ui/kanban';
 import { Award, Activity } from 'lucide-react';
-import TodoCard from '@/Components/TodoCard';
+import TodoCard from './TodoCard';
 
 export default function TodoKanban({
     todos,

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/Components/ui";
 import { Calendar, X } from "lucide-react";
-import Schedule from "@/Components/Schedule/Schedule";
+import Schedule from "./components/Schedule";
 
 export default function ScheduleSidebar({ isOpen, onClose }) {
     return (

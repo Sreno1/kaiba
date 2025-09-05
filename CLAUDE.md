@@ -39,8 +39,11 @@ php artisan db:seed --class=TagSeeder
 php artisan migrate:fresh --seed
 ```
 
-### Testing
+### Testing (REQUIRED WORKFLOW)
 ```bash
+# ALWAYS run before making ANY changes
+php artisan test
+
 # Run all tests
 php artisan test
 # Or via composer
@@ -50,8 +53,13 @@ composer run test
 php artisan test --testsuite=Feature
 php artisan test --testsuite=Unit
 
-# Run specific test file
-php artisan test tests/Feature/ProfileTest.php
+# Run specific test files
+php artisan test tests/Feature/TodoTest.php
+php artisan test tests/Feature/TodoSearchTest.php
+php artisan test tests/Unit/TodoModelTest.php
+
+# Run tests with coverage (optional)
+php artisan test --coverage
 ```
 
 ### Build and Assets
@@ -134,6 +142,83 @@ Frontend (React) ↔ Inertia.js ↔ Laravel Routes ↔ Controllers ↔ Models �
 - **Authorization**: Policy-based row-level security
 - **Data Isolation**: User-scoped todos, global tags
 
+## Testing Development Rules (MANDATORY)
+
+**⚠️ CRITICAL: These rules must be followed for ALL development work**
+
+### Before Making ANY Changes
+```bash
+# 1. ALWAYS run tests first to ensure clean baseline
+php artisan test
+```
+
+### When Adding New Features
+```bash
+# 1. Write tests FIRST (Test-Driven Development recommended)
+php artisan make:test Feature/NewFeatureTest
+
+# 2. Run the failing test
+php artisan test tests/Feature/NewFeatureTest.php
+
+# 3. Implement the feature
+# 4. Run tests to see them pass
+php artisan test tests/Feature/NewFeatureTest.php
+
+# 5. Run ALL tests to ensure no regressions
+php artisan test
+```
+
+### When Modifying Existing Features
+```bash
+# 1. Run existing tests first
+php artisan test tests/Feature/TodoTest.php
+
+# 2. Make your changes
+# 3. Run specific tests again
+php artisan test tests/Feature/TodoTest.php
+
+# 4. Run all tests
+php artisan test
+```
+
+### Before Committing Changes
+```bash
+# MANDATORY: All tests must pass before committing
+php artisan test
+
+# Only commit if output shows: "Tests: X passed"
+git add .
+git commit -m "Add feature with tests"
+```
+
+### Test Requirements for New Features
+- **Feature Tests**: Test all API endpoints and user workflows
+- **Unit Tests**: Test complex model methods and business logic  
+- **Security Tests**: Test authorization and data isolation
+- **Edge Cases**: Test validation, error handling, empty states
+
+### Existing Test Files (Use as Examples)
+- `tests/Feature/TodoTest.php` - Todo CRUD operations
+- `tests/Feature/TodoSearchTest.php` - Search functionality  
+- `tests/Feature/TagTest.php` - Tag management
+- `tests/Unit/TodoModelTest.php` - Model behavior
+
+### Test Commands Reference
+```bash
+# All tests (run before every commit)
+php artisan test
+
+# Specific test files  
+php artisan test tests/Feature/TodoTest.php
+php artisan test tests/Unit/TodoModelTest.php
+
+# Test specific method
+php artisan test --filter test_user_can_create_todo
+
+# Test with coverage
+php artisan test --coverage
+```
+
 ## Development Guidelines
 
 ### File Organization
@@ -154,10 +239,16 @@ Frontend (React) ↔ Inertia.js ↔ Laravel Routes ↔ Controllers ↔ Models �
 - Use Inertia.js for SPA-like navigation without full page reloads
 - Follow shadcn/ui patterns for new UI components
 
-### Testing Strategy
+### Testing Strategy (CRITICAL - ALWAYS FOLLOW)
 - **Backend**: Feature tests for API endpoints, Unit tests for business logic
 - **Configuration**: PHPUnit with in-memory SQLite for testing
 - **Test Environment**: Isolated test database with array drivers for speed
+- **Current Test Coverage**: 38 tests, 124 assertions - ALL PASSING ✅
+  - Feature Tests: 27 tests (Todo CRUD, Search, Tags)
+  - Unit Tests: 11 tests (Model behavior, relationships)
+- **Factories**: Todo and Tag factories with realistic test data
+- **Note**: Some legacy Laravel Breeze tests fail due to refactoring (Pages->pages). Use filtered tests: `php artisan test --filter="Todo|Tag"`
+- **MANDATORY WORKFLOW**: See "Testing Development Rules" below
 
 ### State Management Patterns
 - **Server State**: API calls with manual cache invalidation

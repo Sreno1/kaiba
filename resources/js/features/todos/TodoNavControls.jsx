@@ -1,6 +1,6 @@
-import React from 'react';
-import ThemeToggle from './ThemeToggle';
-import { useTodos } from "@/Components/TodosContext";
+import React, { useState, useCallback, useEffect } from 'react';
+import ThemeToggle from '@/Components/ThemeToggle';
+import { useTodos } from "./TodosContext";
 import {
     Button,
     Input,
@@ -21,6 +21,8 @@ import {
     Tag,
     Plus,
     Trash2,
+    Search,
+    X,
 } from "lucide-react";
 
 export default function TodoNavControls({
@@ -42,10 +44,60 @@ export default function TodoNavControls({
         setTagForm,
         handleCreateTag,
         handleDeleteTag,
+        handleSearch,
     } = useTodos();
+
+    // Search state
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Simple debounce using useEffect
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            handleSearch(searchQuery);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery, handleSearch]);
+
+    // Handle search input changes
+    const handleSearchInputChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+    };
+
+    // Clear search
+    const clearSearch = () => {
+        setSearchQuery('');
+    };
+
     return (
         <div className="flex items-center gap-3">
-                            <ThemeToggle />
+            <ThemeToggle />
+
+            {/* Search Input */}
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                    type="text"
+                    placeholder="Search todos..."
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                    className="pl-9 pr-9 w-64"
+                />
+                {searchQuery && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearSearch}
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted"
+                    >
+                        <X className="w-4 h-4" />
+                    </Button>
+                )}
+            </div>
+
+            {/* Separator */}
+            <div className="h-6 w-px bg-border" />
 
             <div className="flex gap-1 p-1 bg-muted rounded-lg">
                 <Button
@@ -178,7 +230,7 @@ export default function TodoNavControls({
 
                 {/* Add ToDo Button replaces Quick Tag */}
                 <Button
-                    variant="primary"
+                    variant="default"
                     size="sm"
                     className="flex items-center gap-2"
                     onClick={() => setIsCreateDialogOpen && setIsCreateDialogOpen(true)}
