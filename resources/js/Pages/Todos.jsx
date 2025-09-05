@@ -38,7 +38,9 @@ export default function Todos(props) {
     }
 
     // UI state hooks (not managed by TodosContext)
-    const [viewMode, setViewMode] = useState("grid");
+    const [viewMode, setViewMode] = useState(() => {
+        return localStorage.getItem("kaiba-view-mode") || "grid";
+    });
     const [activeTagFilter, setActiveTagFilter] = useState(null);
     const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -65,6 +67,12 @@ export default function Todos(props) {
     const alertModal = useAlertModal();
     const confirmModal = useConfirmModal();
 
+    // Handle view mode change with localStorage persistence
+    const handleViewModeChange = (newViewMode) => {
+        setViewMode(newViewMode);
+        localStorage.setItem("kaiba-view-mode", newViewMode);
+    };
+
     return (
         <>
             <TodosProvider
@@ -79,7 +87,7 @@ export default function Todos(props) {
                 <TodosPageContent
                     auth={auth}
                     viewMode={viewMode}
-                    setViewMode={setViewMode}
+                    setViewMode={handleViewModeChange}
                     activeTagFilter={activeTagFilter}
                     setActiveTagFilter={setActiveTagFilter}
                     isTagManagerOpen={isTagManagerOpen}
