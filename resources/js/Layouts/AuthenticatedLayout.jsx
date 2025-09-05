@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { PanelLeftOpen, PanelLeftClose, StickyNote, Palette, Sun, Moon, Circle } from 'lucide-react';
+import { PanelLeftOpen, PanelLeftClose, StickyNote, Palette, Sun, Moon, Circle, BookOpen } from 'lucide-react';
 import ProjectSelector from '@/features/scratchpad/components/ProjectSelector';
 import {
     DropdownMenu,
@@ -13,6 +13,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/Components/ui/dropdown-menu';
+import DocsDashboard from '@/Components/DocsDashboard';
 
 const themes = [
   { key: 'light', label: 'Light', icon: Sun },
@@ -24,6 +25,7 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
     const { tags } = usePage().props;
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+    const [showDocsDashboard, setShowDocsDashboard] = useState(false);
 
     const [theme, setTheme] = useState(() =>
         typeof window !== 'undefined'
@@ -98,7 +100,15 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                             <ProjectSelector tags={tags} />
                             
                             {/* Theme Selector */}
-                            <div className="relative">
+                            <div className="relative ms-3">
+                              
+                              <button
+                                onClick={() => setShowDocsDashboard(true)}
+                                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground rounded-md hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 mr-3"
+                            >
+                                <BookOpen className="w-5 h-5" />
+                                <span className="hidden lg:inline">Docs</span>
+                            </button>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground rounded-md hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                                         <Palette className="w-5 h-5" />
@@ -176,6 +186,14 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
 
                     <div className="border-t border-border pb-1 pt-4">
                         <div className="mt-3 space-y-1">
+                            {/* Docs button for Mobile */}
+                            <button
+                                onClick={() => setShowDocsDashboard(true)}
+                                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+                            >
+                                <BookOpen className="w-4 h-4" />
+                                Documentation
+                            </button>
                             {/* Theme Switcher for Mobile */}
                             <div className="px-4 py-2">
                                 <div className="text-sm font-medium text-foreground mb-2 flex items-center">
@@ -208,6 +226,11 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
             </nav>
 
             <main>{children}</main>
+            
+            <DocsDashboard 
+                isOpen={showDocsDashboard} 
+                onClose={() => setShowDocsDashboard(false)} 
+            />
         </div>
     );
 }
