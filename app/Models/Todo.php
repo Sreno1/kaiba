@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Scout\Searchable;
@@ -20,7 +19,6 @@ class Todo extends Model
         'priority',
         'due_date',
         'status',
-        'user_id',
     ];
 
     protected $casts = [
@@ -28,13 +26,6 @@ class Todo extends Model
         'due_date' => 'date',
     ];
 
-    /**
-     * Get the user that owns the todo.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
     /**
      * The tags that belong to the todo.
@@ -139,7 +130,7 @@ class Todo extends Model
      */
     public static function withRelations()
     {
-        return static::with(['tags', 'user']);
+        return static::with(['tags']);
     }
 
     /**
@@ -149,7 +140,7 @@ class Todo extends Model
     {
         return static::select([
             'id', 'title', 'status', 'priority', 
-            'due_date', 'completed', 'user_id', 'created_at'
+            'due_date', 'completed', 'created_at'
         ]);
     }
 

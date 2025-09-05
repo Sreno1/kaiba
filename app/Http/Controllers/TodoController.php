@@ -5,27 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Todo;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TodoController extends Controller
 {
-    use AuthorizesRequests;
 
     /**
      * Display a listing of the resource.
      */
     public function index(): JsonResponse
     {
-        $userId = Auth::id();
-        $cacheKey = "todos.user.{$userId}";
-        
         // Cache for 5 minutes
-        $todos = Cache::remember($cacheKey, 300, function () {
-            return Auth::user()
-                ->todos()
-                ->with('tags') // Eager load to prevent N+1
+        $todos = Cache::remember('todos.all', 300, function () {
+            return Todo::with('tags') // Eager load to prevent N+1
                 ->orderBy('created_at', 'desc')
                 ->get();
         });
@@ -34,14 +26,11 @@ class TodoController extends Controller
     }
 
     /**
-     * Get todos by priority (uses the new priority indexes)
+     * Get todos by priority
      */
     public function byPriority(string $priority): JsonResponse
     {
-        // This query will use idx_todos_user_priority index
-        $todos = Auth::user()
-            ->todos()
-            ->where('priority', $priority)
+        $todos = Todo::where('priority', $priority)
             ->with('tags')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -50,7 +39,7 @@ class TodoController extends Controller
     }
 
     /**
-     * Search todos for the authenticated user
+     * Search todos
      */
     public function search(Request $request): JsonResponse
     {
@@ -60,13 +49,11 @@ class TodoController extends Controller
             return $this->index();
         }
         
-        $userId = Auth::id();
-        $cacheKey = "todos.search.{$userId}." . md5($query);
+        $cacheKey = "todos.search." . md5($query);
         
         // Cache search results for 2 minutes
-        $todos = Cache::remember($cacheKey, 120, function () use ($query, $userId) {
+        $todos = Cache::remember($cacheKey, 120, function () use ($query) {
             return Todo::search($query)
-                ->where('user_id', $userId)
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->load('tags');
@@ -90,7 +77,7 @@ class TodoController extends Controller
             'tag_ids.*' => 'exists:tags,id',
         ]);
 
-        $todo = Auth::user()->todos()->create([
+        $todo = Todo::create([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'priority' => $validated['priority'] ?? 'medium',
@@ -102,8 +89,8 @@ class TodoController extends Controller
             $todo->tags()->attach($validated['tag_ids']);
         }
 
-        // Invalidate user's todo and search cache
-        $this->clearUserCache($todo->user_id);
+        // Invalidate todo and search cache
+        $this->clearCache();
         
         return response()->json($todo->load('tags'), 201);
     }
@@ -113,7 +100,6 @@ class TodoController extends Controller
      */
     public function show(Todo $todo): JsonResponse
     {
-        $this->authorize('view', $todo);
         return response()->json($todo->load('tags'));
     }
 
@@ -122,7 +108,6 @@ class TodoController extends Controller
      */
     public function update(Request $request, Todo $todo): JsonResponse
     {
-        $this->authorize('update', $todo);
 
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
@@ -141,8 +126,8 @@ class TodoController extends Controller
             $todo->tags()->sync($validated['tag_ids'] ?? []);
         }
 
-        // Invalidate user's todo and search cache
-        $this->clearUserCache($todo->user_id);
+        // Invalidate todo and search cache
+        $this->clearCache();
         
         return response()->json($todo->load('tags'));
     }
@@ -152,28 +137,23 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo): JsonResponse
     {
-        $this->authorize('delete', $todo);
-        $userId = $todo->user_id;
         $todo->delete();
         
-        // Invalidate user's todo and search cache
-        $this->clearUserCache($userId);
+        // Invalidate todo and search cache
+        $this->clearCache();
         
         return response()->json(null, 204);
     }
     
     /**
-     * Clear all caches for a specific user
+     * Clear all caches
      */
-    private function clearUserCache(int $userId): void
+    private function clearCache(): void
     {
         // Clear main todos cache
-        Cache::forget("todos.user.{$userId}");
+        Cache::forget('todos.all');
         
-        // Clear search caches (pattern-based clearing)
-        $searchPattern = "todos.search.{$userId}.*";
-        
-        // For production, you'd want to implement pattern-based cache clearing
-        // For now, we'll rely on the short TTL of search cache (2 minutes)
+        // For search caches, we'll rely on the short TTL (2 minutes)
+        // In production, you might want to implement pattern-based cache clearing
     }
 }

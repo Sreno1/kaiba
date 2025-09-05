@@ -1,8 +1,6 @@
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { PanelLeftOpen, PanelLeftClose, StickyNote, User, ChevronDown, Settings, LogOut, Palette, Sun, Moon, Circle } from 'lucide-react';
+import { PanelLeftOpen, PanelLeftClose, StickyNote, Palette, Sun, Moon, Circle } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,8 +20,6 @@ const themes = [
 ];
 
 export default function AuthenticatedLayout({ header, children, sidebarControls, navControls }) {
-    const user = usePage().props.auth.user;
-
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
@@ -84,7 +80,7 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                         <div className="flex items-center flex-1">
                             <div className="flex shrink-0 items-center mr-8">
                                 <Link href="/">
-                                    <span className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Boldonse, sans-serif' }}>KAIBA</span>
+                                    <span className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Boldonse, sans-serif' }}>SHAIBA</span>
                                 </Link>
                             </div>
                             {/* Navigation Controls */}
@@ -99,63 +95,24 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                             <div className="relative ms-3">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground rounded-md hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                        <User className="w-5 h-5" />
-                                        <ChevronDown className="w-4 h-4" />
+                                        <Palette className="w-5 h-5" />
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-56">
-                                        <DropdownMenuLabel className="font-normal">
-                                            <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-medium leading-none">Account</p>
-                                                <p className="text-xs leading-none text-muted-foreground">
-                                                    {user.name}
-                                                </p>
-                                            </div>
-                                        </DropdownMenuLabel>
+                                    <DropdownMenuContent align="end" className="w-40">
+                                        <DropdownMenuLabel>Theme</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-
-                                        {/* Theme Switcher Submenu */}
-                                        <DropdownMenuSub>
-                                            <DropdownMenuSubTrigger>
-                                                <Palette className="w-4 h-4 mr-2" />
-                                                <span>Theme</span>
-                                            </DropdownMenuSubTrigger>
-                                            <DropdownMenuSubContent>
-                                                {themes.map((themeOption) => {
-                                                    const IconComponent = themeOption.icon;
-                                                    return (
-                                                        <DropdownMenuItem
-                                                            key={themeOption.key}
-                                                            onClick={() => handleThemeChange(themeOption.key)}
-                                                            className={theme === themeOption.key ? 'bg-accent' : ''}
-                                                        >
-                                                            <IconComponent className="w-4 h-4 mr-2" />
-                                                            <span>{themeOption.label}</span>
-                                                        </DropdownMenuItem>
-                                                    );
-                                                })}
-                                            </DropdownMenuSubContent>
-                                        </DropdownMenuSub>
-
-                                        {/* Preferences */}
-                                        <DropdownMenuItem>
-                                            <Settings className="w-4 h-4 mr-2" />
-                                            <span>Preferences</span>
-                                        </DropdownMenuItem>
-
-                                        <DropdownMenuSeparator />
-
-                                        {/* Log Out */}
-                                        <DropdownMenuItem asChild>
-                                            <NavLink
-                                                href={route('logout')}
-                                                method="post"
-                                                as="button"
-                                                className="w-full flex items-center text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                                            >
-                                                <LogOut className="w-4 h-4 mr-2" />
-                                                <span>Log Out</span>
-                                            </NavLink>
-                                        </DropdownMenuItem>
+                                        {themes.map((themeOption) => {
+                                            const IconComponent = themeOption.icon;
+                                            return (
+                                                <DropdownMenuItem
+                                                    key={themeOption.key}
+                                                    onClick={() => handleThemeChange(themeOption.key)}
+                                                    className={theme === themeOption.key ? 'bg-accent' : ''}
+                                                >
+                                                    <IconComponent className="w-4 h-4 mr-2" />
+                                                    <span>{themeOption.label}</span>
+                                                </DropdownMenuItem>
+                                            );
+                                        })}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
@@ -212,20 +169,7 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                 >
 
                     <div className="border-t border-border pb-1 pt-4">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-foreground">
-                                {user.name}
-                            </div>
-                            <div className="text-sm font-medium text-muted-foreground">
-                                {user.email}
-                            </div>
-                        </div>
-
                         <div className="mt-3 space-y-1">
-                            <div className="px-4 py-2 text-xs text-muted-foreground uppercase tracking-widest">
-                                Account
-                            </div>
-
                             {/* Theme Switcher for Mobile */}
                             <div className="px-4 py-2">
                                 <div className="text-sm font-medium text-foreground mb-2 flex items-center">
@@ -252,21 +196,6 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                                     })}
                                 </div>
                             </div>
-
-                            <ResponsiveNavLink href="#" className="flex items-center">
-                                <Settings className="w-4 h-4 mr-2" />
-                                Preferences
-                            </ResponsiveNavLink>
-
-                            <ResponsiveNavLink
-                                method="post"
-                                href={route('logout')}
-                                as="button"
-                                className="flex items-center text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                            >
-                                <LogOut className="w-4 h-4 mr-2" />
-                                Log Out
-                            </ResponsiveNavLink>
                         </div>
                     </div>
                 </div>

@@ -3,7 +3,6 @@
 namespace Tests\Unit;
 
 use App\Models\Todo;
-use App\Models\User;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -11,17 +10,6 @@ use Tests\TestCase;
 class TodoModelTest extends TestCase
 {
     use RefreshDatabase;
-
-    /**
-     * Test that a todo belongs to a user.
-     */
-    public function test_todo_belongs_to_user()
-    {
-        $todo = Todo::factory()->create();
-        
-        $this->assertInstanceOf(User::class, $todo->user);
-        $this->assertEquals($todo->user_id, $todo->user->id);
-    }
 
     /**
      * Test that a todo can have multiple tags.
@@ -86,7 +74,6 @@ class TodoModelTest extends TestCase
         
         // These fields should not be in the search array
         $this->assertArrayNotHasKey('id', $searchArray);
-        $this->assertArrayNotHasKey('user_id', $searchArray);
         $this->assertArrayNotHasKey('created_at', $searchArray);
         $this->assertArrayNotHasKey('updated_at', $searchArray);
     }
@@ -97,8 +84,6 @@ class TodoModelTest extends TestCase
     public function test_make_all_searchable_includes_tags()
     {
         // This tests that the makeAllSearchableUsing method eager loads tags
-        // We can't easily test the Scout functionality in unit tests,
-        // but we can ensure the method exists and works
         $todo = new Todo();
         
         // Create a mock query builder
@@ -123,7 +108,6 @@ class TodoModelTest extends TestCase
         $todo = Todo::factory()->create();
         
         $this->assertNotEmpty($todo->title);
-        $this->assertNotEmpty($todo->user_id);
         $this->assertContains($todo->priority, ['low', 'medium', 'high']);
         $this->assertContains($todo->status, ['backlog', 'todo', 'working', 'qa', 'in_review', 'completed']);
         $this->assertInstanceOf(\Carbon\Carbon::class, $todo->created_at);
@@ -135,21 +119,17 @@ class TodoModelTest extends TestCase
      */
     public function test_todo_factory_can_create_specific_todos()
     {
-        $user = User::factory()->create();
-        
         $todo = Todo::factory()->create([
             'title' => 'Specific Title',
             'description' => 'Specific Description',
             'priority' => 'high',
-            'status' => 'completed',
-            'user_id' => $user->id
+            'status' => 'completed'
         ]);
         
         $this->assertEquals('Specific Title', $todo->title);
         $this->assertEquals('Specific Description', $todo->description);
         $this->assertEquals('high', $todo->priority);
         $this->assertEquals('completed', $todo->status);
-        $this->assertEquals($user->id, $todo->user_id);
     }
 
     /**
@@ -190,8 +170,7 @@ class TodoModelTest extends TestCase
             'completed' => true,
             'priority' => 'high',
             'due_date' => '2024-12-31',
-            'status' => 'completed',
-            'user_id' => User::factory()->create()->id,
+            'status' => 'completed'
         ];
         
         $todo = Todo::create($data);
