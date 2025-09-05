@@ -28,3 +28,8 @@ Route::get('/', function () {
 Route::resource('todos', App\Http\Controllers\TodoController::class)->except(['create', 'edit']);
 Route::get('todos-search', [App\Http\Controllers\TodoController::class, 'search'])->name('todos.search');
 Route::resource('tags', App\Http\Controllers\TagController::class)->except(['create', 'edit']);
+
+// Scratchpad routes - nested under tags
+Route::get('tags/{tag}/scratchpad', [App\Http\Controllers\ScratchpadController::class, 'show'])->name('scratchpads.show');
+Route::put('tags/{tag}/scratchpad', [App\Http\Controllers\ScratchpadController::class, 'update'])->name('scratchpads.update');
+Route::delete('tags/{tag}/scratchpad', [App\Http\Controllers\ScratchpadController::class, 'destroy'])->name('scratchpads.destroy');
