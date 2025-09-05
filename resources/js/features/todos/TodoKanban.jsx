@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { KanbanProvider, KanbanBoard, KanbanHeader, KanbanCards, KanbanCard } from '@/Components/ui/kanban';
-import { Award, Activity } from 'lucide-react';
+import { Award, Activity, Eye, EyeOff, Plus } from 'lucide-react';
 import TodoCard from './TodoCard';
 
 export default function TodoKanban({
@@ -10,13 +10,27 @@ export default function TodoKanban({
     onToggleComplete,
     onEditTodo,
     onDeleteTodo,
-    onDragEnd
+    onDragEnd,
+    onColumnsVisibilityChange,
+    onAddTodo
 }) {
     // Default to 'status' view
     const [groupByMode, setGroupByMode] = useState('status'); // 'priority' or 'status'
     // Filter toggles
     const [showBackburner, setShowBackburner] = useState(true);
     const [showCompleted, setShowCompleted] = useState(true);
+
+    // Notify parent component about visibility changes
+    useEffect(() => {
+        onColumnsVisibilityChange?.({
+            showBackburner,
+            showCompleted,
+            groupByMode,
+            setShowBackburner,
+            setShowCompleted,
+            setGroupByMode
+        });
+    }, [showBackburner, showCompleted, groupByMode, onColumnsVisibilityChange]);
 
     // Define the priority columns
     const priorityColumns = [
@@ -100,55 +114,6 @@ export default function TodoKanban({
 
     return (
         <div className="h-full w-full flex flex-col">
-            {/* Toggle Header */}
-            <div className="flex items-center justify-between p-4 border-b bg-card">
-                <h3 className="text-lg font-semibold text-foreground">Kanban Board</h3>
-                <div className="flex gap-2 items-center">
-                    {/* Group By Buttons */}
-                    <div className="flex gap-1 p-1 bg-muted rounded-lg">
-                        <Button
-                            variant={groupByMode === 'priority' ? 'default' : 'ghost'}
-                            size="sm"
-                            onClick={() => setGroupByMode('priority')}
-                            className="h-8 text-xs"
-                        >
-                            <Award className="w-3 h-3 mr-1" />
-                            Priority
-                        </Button>
-                        <Button
-                            variant={groupByMode === 'status' ? 'default' : 'ghost'}
-                            size="sm"
-                            onClick={() => setGroupByMode('status')}
-                            className="h-8 text-xs"
-                        >
-                            <Activity className="w-3 h-3 mr-1" />
-                            Status
-                        </Button>
-                    </div>
-                    {/* Filter Toggles */}
-                    {groupByMode === 'status' && (
-                        <div className="flex gap-1 ml-2">
-                            <Button
-                                variant={showBackburner ? 'default' : 'ghost'}
-                                size="sm"
-                                onClick={() => setShowBackburner(v => !v)}
-                                className="h-8 text-xs"
-                            >
-                                Backburner
-                            </Button>
-                            <Button
-                                variant={showCompleted ? 'default' : 'ghost'}
-                                size="sm"
-                                onClick={() => setShowCompleted(v => !v)}
-                                className="h-8 text-xs"
-                            >
-                                Completed
-                            </Button>
-                        </div>
-                    )}
-                </div>
-            </div>
-
             {/* Kanban Content */}
             <div className="flex-1">
             <KanbanProvider
@@ -158,7 +123,7 @@ export default function TodoKanban({
                 className="h-full"
             >
                 {(column) => (
-                    <KanbanBoard id={column.id} key={column.id} className={`h-full ${column.color}`}>
+                    <KanbanBoard id={column.id} key={column.id} className={`h-full ${column.color} group/column`}>
                         <KanbanHeader className="flex items-center justify-between p-4 border-b">
                             <div className="flex items-center gap-2">
                                 <div className={`w-3 h-3 rounded-full ${getColumnColor(column.id)}`}></div>
@@ -167,21 +132,53 @@ export default function TodoKanban({
                                     {kanbanData.filter(item => item.column === column.id).length}
                                 </Badge>
                             </div>
+                            {groupByMode === 'status' && (column.id === 'backlog' || column.id === 'completed') && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        if (column.id === 'backlog') {
+                                            setShowBackburner(false);
+                                        } else if (column.id === 'completed') {
+                                            setShowCompleted(false);
+                                        }
+                                    }}
+                                    className="h-6 w-6 p-0 hover:bg-muted"
+                                    title={`Hide ${column.name}`}
+                                >
+                                    <EyeOff className="w-3 h-3" />
+                                </Button>
+                            )}
                         </KanbanHeader>
 
-                        <KanbanCards id={column.id} className="flex-1 p-2">
-                            {(item) => (
-                                <KanbanCard key={item.id} id={item.id} name={item.name} className="group">
-                                    <TodoCard
-                                        todo={item.todo}
-                                        onToggleComplete={onToggleComplete}
-                                        onEdit={onEditTodo}
-                                        onDelete={onDeleteTodo}
-                                        variant="kanban"
-                                    />
-                                </KanbanCard>
-                            )}
-                        </KanbanCards>
+                        <div className="flex-1 flex flex-col">
+                            <KanbanCards id={column.id} className="flex-1 p-2">
+                                {(item) => (
+                                    <KanbanCard key={item.id} id={item.id} name={item.name} className="group">
+                                        <TodoCard
+                                            todo={item.todo}
+                                            onToggleComplete={onToggleComplete}
+                                            onEdit={onEditTodo}
+                                            onDelete={onDeleteTodo}
+                                            variant="kanban"
+                                        />
+                                    </KanbanCard>
+                                )}
+                            </KanbanCards>
+                            
+                            {/* Add Todo Button - appears on hover */}
+                            <div className="p-2 opacity-0 group-hover/column:opacity-100 transition-opacity">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onAddTodo?.(groupByMode === 'priority' ? { priority: column.id } : { status: column.id })}
+                                    className="w-full h-8 text-muted-foreground hover:text-foreground border-2 border-dashed border-muted hover:border-muted-foreground/50 transition-colors"
+                                >
+                                    <Plus className="w-4 h-4 mr-1" />
+                                    Add Todo
+                                </Button>
+                            </div>
+                        </div>
                     </KanbanBoard>
                 )}
             </KanbanProvider>

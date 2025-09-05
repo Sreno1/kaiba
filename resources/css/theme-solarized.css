@@ -1,18 +1,18 @@
 html[data-theme="solarized"] {
-  --background: #fdf6e3;
-  --foreground: #657b83;
-  --card: #fdf6e3;
-  --card-foreground: #657b83;
-  --primary: #586e75;
-  --primary-foreground: #fdf6e3;
-  --secondary: #eee8d5;
-  --secondary-foreground: #586e75;
-  --muted: #eee8d5;
-  --muted-foreground: #93a1a1;
-  --accent: #b58900;
-  --accent-foreground: #fdf6e3;
-  --border: #eee8d5;
-  --input: #eee8d5;
+  --background: 44 87% 94%;
+  --foreground: 192 16% 46%;
+  --card: 44 87% 94%;
+  --card-foreground: 192 16% 46%;
+  --primary: 194 14% 40%;
+  --primary-foreground: 44 87% 94%;
+  --secondary: 45 47% 91%;
+  --secondary-foreground: 194 14% 40%;
+  --muted: 45 47% 91%;
+  --muted-foreground: 180 7% 60%;
+  --accent: 45 100% 35%;
+  --accent-foreground: 44 87% 94%;
+  --border: 45 47% 91%;
+  --input: 45 47% 91%;
   --radius: 0.5rem;
   background-color: #fdf6e3;
 }

@@ -47,7 +47,7 @@ export default function TodoCard({
     return (
         <Card
             className={`
-                ${todo.completed ? 'opacity-60' : ''}
+                ${todo.status === 'completed' ? 'opacity-60' : ''}
                 group transition-all duration-200
                 border border-gray-200 hover:border-gray-300 bg-white dark:bg-gray-900 rounded-lg
                 ${variant === 'grid' ? 'hover:shadow-lg' : ''}
@@ -60,12 +60,12 @@ export default function TodoCard({
                 <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
                         <Checkbox
-                            checked={todo.completed}
-                            onCheckedChange={() => onToggleComplete(todo)}
+                            checked={todo.status === 'completed'}
+                            onCheckedChange={() => onToggleComplete(todo.id)}
                             onClick={(e) => e.stopPropagation()}
                         />
                         <h3 className={`font-medium text-sm leading-tight ${
-                            todo.completed ? 'line-through text-muted-foreground' : 'text-foreground'
+                            todo.status === 'completed' ? 'line-through text-muted-foreground' : 'text-foreground'
                         } truncate`}>
                             {todo.title}
                         </h3>
@@ -96,15 +96,24 @@ export default function TodoCard({
                     </div>
                 </div>
 
-                {/* Status and Priority indicators */}
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                        <div className={`w-2 h-2 rounded-full ${getStatusColor(todo.status || 'todo')}`}></div>
-                        <span className="text-xs text-muted-foreground">{formatStatus(todo.status || 'todo')}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <div className={`w-2 h-2 rounded-full ${getPriorityColor(todo.priority)}`}></div>
-                        <span className="text-xs text-muted-foreground capitalize">{todo.priority}</span>
+                {/* Priority indicator bar and Status badge */}
+                <div className="flex items-center justify-between gap-2">
+                    <div className={`w-1 h-6 rounded-full ${getPriorityColor(todo.priority)}`}></div>
+                    <div className="flex items-center gap-2 flex-1">
+                        <Badge 
+                            variant="outline" 
+                            className={`text-xs px-2 py-0.5 h-5 ${
+                                todo.status === 'completed' ? 'text-green-600 border-green-200' :
+                                todo.status === 'working' ? 'text-orange-600 border-orange-200' :
+                                todo.status === 'qa' ? 'text-purple-600 border-purple-200' :
+                                todo.status === 'in_review' ? 'text-yellow-600 border-yellow-200' :
+                                todo.status === 'backlog' ? 'text-muted-foreground border-muted' :
+                                'text-blue-600 border-blue-200'
+                            }`}
+                        >
+                            {formatStatus(todo.status || 'todo')}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground capitalize">{todo.priority} priority</span>
                     </div>
                 </div>
 

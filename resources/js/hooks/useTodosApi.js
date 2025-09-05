@@ -14,8 +14,6 @@ export default function useTodosApi({
     setTagForm: externalSetTagForm,
     showAlert,
 }) {
-    // Debug initial data
-    console.log('useTodosApi initialized with:', { initialTodos, initialTags });
     // Local state fallback if not provided
     const [todos, setTodos] = externalSetTodos ? [null, externalSetTodos] : useState(initialTodos || []);
     const [tags, setTags] = externalSetTags ? [null, externalSetTags] : useState(initialTags || []);
@@ -70,7 +68,7 @@ export default function useTodosApi({
                 ...todo,
                 tags: todo.tags ? todo.tags.filter(tag => tag.id !== id) : []
             })));
-            showAlert && showAlert('Tag deleted successfully!', 'Success');
+            // Remove success alert to prevent dialog conflicts - visual feedback is sufficient
         } catch (error) {
             console.error('Error deleting tag:', error);
             const errorMessage = error.response?.data?.message || 'Failed to delete tag';
@@ -141,21 +139,29 @@ export default function useTodosApi({
         }
     };
 
+    const handleUpdateTodoField = async (id, updates) => {
+        try {
+            const response = await axios.put(`/todos/${id}`, updates);
+            setTodos(prev => prev.map(todo =>
+                todo.id === id ? response.data : todo
+            ));
+            return response.data;
+        } catch (error) {
+            console.error('Error updating todo:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to update todo';
+            showAlert && showAlert(`Error: ${errorMessage}`, 'Error');
+            throw error;
+        }
+    };
+
     const handleToggleComplete = async (id) => {
         const todo = (todos || []).find(t => t.id === id);
         if (!todo) return;
         try {
             const newStatus = todo.status === 'completed' ? 'todo' : 'completed';
-            const response = await axios.put(`/todos/${id}`, {
-                status: newStatus
-            });
-            setTodos(prev => prev.map(t =>
-                t.id === id ? response.data : t
-            ));
+            await handleUpdateTodoField(id, { status: newStatus });
         } catch (error) {
-            console.error('Error toggling todo completion:', error);
-            const errorMessage = error.response?.data?.message || 'Failed to update todo';
-            showAlert && showAlert(`Error: ${errorMessage}`, 'Error');
+            // Error already handled in handleUpdateTodoField
         }
     };
 
@@ -248,6 +254,7 @@ export default function useTodosApi({
         handleDeleteTag,
         handleCreateTodo,
         handleUpdateTodo,
+        handleUpdateTodoField,
         handleToggleComplete,
         openEditDialog,
         handleDeleteTodo,

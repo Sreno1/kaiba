@@ -1,18 +1,18 @@
 html[data-theme="light"] {
-  --background: #fff;
-  --foreground: #111;
-  --card: #fff;
-  --card-foreground: #111;
-  --primary: #18181b;
-  --primary-foreground: #f9fafb;
-  --secondary: #f3f4f6;
-  --secondary-foreground: #18181b;
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
-  --accent: #f3f4f6;
-  --accent-foreground: #18181b;
-  --border: #e5e7eb;
-  --input: #e5e7eb;
+  --background: 0 0% 100%;
+  --foreground: 0 0% 7%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 7%;
+  --primary: 240 5% 10%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 95%;
+  --secondary-foreground: 240 5% 10%;
+  --muted: 210 40% 95%;
+  --muted-foreground: 215 13% 43%;
+  --accent: 210 40% 95%;
+  --accent-foreground: 240 5% 10%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
   --radius: 0.5rem;
   background-color: #fff;
 }

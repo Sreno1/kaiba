@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 
 const t = tunnel();
 
-export { DragEndEvent } from '@dnd-kit/core';
+// DragEndEvent is a TypeScript type, not available in JavaScript runtime
 
 const KanbanContext = createContext({
   columns: [],

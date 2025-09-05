@@ -54,4 +54,44 @@ class User extends Authenticatable
     {
         return $this->hasMany(Todo::class);
     }
+
+    /**
+     * Get user's active todos
+     */
+    public function activeTodos(): HasMany
+    {
+        return $this->hasMany(Todo::class)->active();
+    }
+
+    /**
+     * Get user's high priority todos
+     */
+    public function highPriorityTodos(): HasMany
+    {
+        return $this->hasMany(Todo::class)->byPriority('high');
+    }
+
+    /**
+     * Get user's overdue todos
+     */
+    public function overdueTodos(): HasMany
+    {
+        return $this->hasMany(Todo::class)->overdue();
+    }
+
+    /**
+     * Get user's todos due within X days
+     */
+    public function todosDueWithin($days = 7): HasMany
+    {
+        return $this->hasMany(Todo::class)->dueWithin($days);
+    }
+
+    /**
+     * Get user's recent todos
+     */
+    public function recentTodos($days = 30): HasMany
+    {
+        return $this->hasMany(Todo::class)->recent($days);
+    }
 }
