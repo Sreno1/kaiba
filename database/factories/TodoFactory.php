@@ -23,7 +23,6 @@ class TodoFactory extends Factory
             'priority' => fake()->randomElement(['low', 'medium', 'high']),
             'due_date' => fake()->optional()->dateTimeBetween('now', '+1 year'),
             'status' => fake()->randomElement(['backlog', 'todo', 'working', 'qa', 'in_review', 'completed']),
-            'user_id' => \App\Models\User::factory(),
         ];
     }
 }

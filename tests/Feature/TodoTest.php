@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Todo;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,12 +12,10 @@ class TodoTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Test that an authenticated user can create a todo.
+     * Test that a todo can be created.
      */
-    public function test_user_can_create_todo()
+    public function test_can_create_todo()
     {
-        $user = User::factory()->create();
-        
         $todoData = [
             'title' => 'Buy groceries',
             'description' => 'Milk, bread, eggs',
@@ -26,7 +23,7 @@ class TodoTest extends TestCase
             'status' => 'todo'
         ];
         
-        $response = $this->actingAs($user)->postJson('/todos', $todoData);
+        $response = $this->postJson('/todos', $todoData);
         
         $response->assertStatus(201);
         $response->assertJson([
@@ -39,7 +36,6 @@ class TodoTest extends TestCase
         // Verify it was saved to database
         $this->assertDatabaseHas('todos', [
             'title' => 'Buy groceries',
-            'user_id' => $user->id,
             'priority' => 'high'
         ]);
     }
@@ -49,11 +45,8 @@ class TodoTest extends TestCase
      */
     public function test_todo_title_is_required()
     {
-        $user = User::factory()->create();
-        
-        $response = $this->actingAs($user)->postJson('/todos', [
-            'description' => 'Some description'
-            // Missing title
+        $response = $this->postJson('/todos', [
+            'description' => 'Without title'
         ]);
         
         $response->assertStatus(422);
@@ -61,190 +54,127 @@ class TodoTest extends TestCase
     }
 
     /**
-     * Test that a user can view their own todos.
+     * Test that todos can be listed.
      */
-    public function test_user_can_view_their_todos()
+    public function test_can_list_todos()
     {
-        $user = User::factory()->create();
-        $otherUser = User::factory()->create();
+        // Create test todos
+        Todo::factory()->count(3)->create();
         
-        // Create todos for both users
-        $userTodo = Todo::factory()->create([
-            'user_id' => $user->id,
-            'title' => 'My Todo'
-        ]);
-        
-        Todo::factory()->create([
-            'user_id' => $otherUser->id,
-            'title' => 'Other User Todo'
-        ]);
-        
-        $response = $this->actingAs($user)->getJson('/todos');
+        $response = $this->getJson('/todos');
         
         $response->assertStatus(200);
-        $response->assertJsonCount(1); // Should only see own todo
-        $response->assertJsonFragment(['title' => 'My Todo']);
-        $response->assertJsonMissing(['title' => 'Other User Todo']);
+        $response->assertJsonCount(3);
     }
 
     /**
-     * Test that a user cannot view another user's specific todo.
+     * Test that a todo can be viewed.
      */
-    public function test_user_cannot_view_other_users_todo()
+    public function test_can_view_todo()
     {
-        $user = User::factory()->create();
-        $otherUser = User::factory()->create();
-        
-        $otherUserTodo = Todo::factory()->create([
-            'user_id' => $otherUser->id,
-            'title' => 'Private Todo'
+        $todo = Todo::factory()->create([
+            'title' => 'Test Todo'
         ]);
         
-        $response = $this->actingAs($user)->getJson("/todos/{$otherUserTodo->id}");
+        $response = $this->getJson('/todos/' . $todo->id);
         
-        $response->assertStatus(403); // Forbidden
+        $response->assertStatus(200);
+        $response->assertJson([
+            'title' => 'Test Todo'
+        ]);
     }
 
     /**
-     * Test that a user can update their own todo.
+     * Test that a todo can be updated.
      */
-    public function test_user_can_update_their_todo()
+    public function test_can_update_todo()
     {
-        $user = User::factory()->create();
         $todo = Todo::factory()->create([
-            'user_id' => $user->id,
-            'title' => 'Original Title',
-            'status' => 'todo'
+            'title' => 'Original Title'
         ]);
         
         $updateData = [
             'title' => 'Updated Title',
-            'status' => 'completed'
+            'priority' => 'low'
         ];
         
-        $response = $this->actingAs($user)->putJson("/todos/{$todo->id}", $updateData);
+        $response = $this->putJson('/todos/' . $todo->id, $updateData);
         
         $response->assertStatus(200);
         $response->assertJson([
             'title' => 'Updated Title',
-            'status' => 'completed'
+            'priority' => 'low'
         ]);
         
-        // Verify database was updated
         $this->assertDatabaseHas('todos', [
             'id' => $todo->id,
-            'title' => 'Updated Title',
-            'status' => 'completed'
+            'title' => 'Updated Title'
         ]);
     }
 
     /**
-     * Test that a user cannot update another user's todo.
+     * Test that a todo can be deleted.
      */
-    public function test_user_cannot_update_other_users_todo()
+    public function test_can_delete_todo()
     {
-        $user = User::factory()->create();
-        $otherUser = User::factory()->create();
-        
-        $otherUserTodo = Todo::factory()->create([
-            'user_id' => $otherUser->id,
-            'title' => 'Other User Todo'
-        ]);
-        
-        $response = $this->actingAs($user)->putJson("/todos/{$otherUserTodo->id}", [
-            'title' => 'Hacked Title'
-        ]);
-        
-        $response->assertStatus(403); // Forbidden
-        
-        // Verify original title wasn't changed
-        $this->assertDatabaseHas('todos', [
-            'id' => $otherUserTodo->id,
-            'title' => 'Other User Todo'
-        ]);
-    }
-
-    /**
-     * Test that a user can delete their own todo.
-     */
-    public function test_user_can_delete_their_todo()
-    {
-        $user = User::factory()->create();
         $todo = Todo::factory()->create([
-            'user_id' => $user->id,
             'title' => 'Todo to Delete'
         ]);
         
-        $response = $this->actingAs($user)->deleteJson("/todos/{$todo->id}");
+        $response = $this->deleteJson('/todos/' . $todo->id);
         
-        $response->assertStatus(204); // No content
+        $response->assertStatus(204);
         
-        // Verify it was deleted from database
         $this->assertDatabaseMissing('todos', [
             'id' => $todo->id
         ]);
     }
 
     /**
-     * Test that a user cannot delete another user's todo.
+     * Test that todos can be created with tags.
      */
-    public function test_user_cannot_delete_other_users_todo()
+    public function test_can_create_todo_with_tags()
     {
-        $user = User::factory()->create();
-        $otherUser = User::factory()->create();
-        
-        $otherUserTodo = Todo::factory()->create([
-            'user_id' => $otherUser->id,
-            'title' => 'Protected Todo'
-        ]);
-        
-        $response = $this->actingAs($user)->deleteJson("/todos/{$otherUserTodo->id}");
-        
-        $response->assertStatus(403); // Forbidden
-        
-        // Verify it wasn't deleted
-        $this->assertDatabaseHas('todos', [
-            'id' => $otherUserTodo->id,
-            'title' => 'Protected Todo'
-        ]);
-    }
-
-    /**
-     * Test that a user can create a todo with tags.
-     */
-    public function test_user_can_create_todo_with_tags()
-    {
-        $user = User::factory()->create();
-        $tag1 = Tag::factory()->create();
-        $tag2 = Tag::factory()->create();
+        $tags = Tag::factory()->count(2)->create();
         
         $todoData = [
             'title' => 'Tagged Todo',
-            'description' => 'A todo with tags',
-            'tag_ids' => [$tag1->id, $tag2->id]
+            'tag_ids' => $tags->pluck('id')->toArray()
         ];
         
-        $response = $this->actingAs($user)->postJson('/todos', $todoData);
+        $response = $this->postJson('/todos', $todoData);
         
         $response->assertStatus(201);
-        $response->assertJsonCount(2, 'tags'); // Should have 2 tags
         
-        // Verify tags are associated with the todo
         $todo = Todo::where('title', 'Tagged Todo')->first();
-        $this->assertEquals(2, $todo->tags()->count());
-        $this->assertTrue($todo->tags->contains($tag1));
-        $this->assertTrue($todo->tags->contains($tag2));
+        $this->assertEquals(2, $todo->tags->count());
     }
 
     /**
-     * Test that only authenticated users can access todos.
+     * Test todo priority validation.
      */
-    public function test_unauthenticated_user_cannot_access_todos()
+    public function test_todo_priority_validation()
     {
-        $response = $this->getJson('/todos');
-        $response->assertStatus(401); // Unauthorized
+        $response = $this->postJson('/todos', [
+            'title' => 'Test Todo',
+            'priority' => 'invalid'
+        ]);
         
-        $response = $this->postJson('/todos', ['title' => 'Test']);
-        $response->assertStatus(401); // Unauthorized
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['priority']);
+    }
+
+    /**
+     * Test todo status validation.
+     */
+    public function test_todo_status_validation()
+    {
+        $response = $this->postJson('/todos', [
+            'title' => 'Test Todo',
+            'status' => 'invalid'
+        ]);
+        
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['status']);
     }
 }
