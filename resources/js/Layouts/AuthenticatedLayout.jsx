@@ -1,6 +1,7 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { PanelLeftOpen, PanelLeftClose, StickyNote, Palette, Sun, Moon, Circle } from 'lucide-react';
+import ProjectSelector from '@/features/scratchpad/components/ProjectSelector';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,6 +21,7 @@ const themes = [
 ];
 
 export default function AuthenticatedLayout({ header, children, sidebarControls, navControls }) {
+    const { tags } = usePage().props;
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
@@ -91,8 +93,12 @@ export default function AuthenticatedLayout({ header, children, sidebarControls,
                             )}
                         </div>
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
+                        <div className="hidden sm:ms-6 sm:flex sm:items-center sm:gap-3">
+                            {/* Project Selector */}
+                            <ProjectSelector tags={tags} />
+                            
+                            {/* Theme Selector */}
+                            <div className="relative">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground rounded-md hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                                         <Palette className="w-5 h-5" />
